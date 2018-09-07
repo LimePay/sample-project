@@ -1,11 +1,14 @@
 'use strict';
 const express = require('express');
 const axios = require('axios');
+const jsonWallet = require('./wallet');
 const app = express();
 
 const API_KEY = "99bbce90b29a11e8a5c8b5534e5da078";
 const API_SECRET = "0e9de3d34e14e65020b5961bbce3f2a30089d5a712c2a34ef5a981ca131f77652da0d5f372b05fd9147c48181b634f7cd2d987fa5b37335a81a2e911cb2f8446b0311a0fa35a058cd58811108137ddf9eeb5796f995977f41ae4afebfab156f07ed46e1039b3b81d91dc472a9d286535e7633613e01efee789963bd17d5405ab";
 const URL = "http://localhost:3000/limetoken"
+
+
 
 app.use('/static', express.static('public'));
 app.get('/', async (req, res, next) => {
@@ -22,7 +25,7 @@ app.get('/', async (req, res, next) => {
             }
         });
         let token = result.headers["x-lime-token"];
-        res.json(token);
+        res.json({ token: token, jsonWallet: jsonWallet });
     } catch (err) {
         console.log(err);
     }
