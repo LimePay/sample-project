@@ -1,21 +1,28 @@
 {
+    "address": "4102c38cded18458b0ae122824e43500a4b11165",
+    "id": "d26cb278-1f75-4de6-8ce7-4ea3c07620ac",
     "version": 3,
-    "id": "fca590fc-a95d-4593-aa24-5bd58478f6b6",
-    "address": "a3796ec8e53402fd4ea9f67012060e86b4a86572",
     "Crypto": {
-        "ciphertext": "3e81672acdb00733597bdcbc60eef0ffdc70bb540189782e314f4ddf8427befd",
-        "cipherparams": {
-            "iv": "d51f137de2f6b5e815e3dba88373a93d"
-        },
         "cipher": "aes-128-ctr",
+        "cipherparams": {
+            "iv": "5b6881bd28d9cd71b4c7a303094f6d83"
+        },
+        "ciphertext": "6b764d673dedb6bfa57e6087550804c449e9b60fe8a074feb10d6aabff82c608",
         "kdf": "scrypt",
         "kdfparams": {
+            "salt": "cbee9797974f4bf296689bebfba978a0f66e1f8f9913bb968bc493c1bce6f989",
+            "n": 131072,
             "dklen": 32,
-            "salt": "c9c2d35b4d1aa4f24ea7c651d0575d5a293ca69cb480e0698d1b025dbb0ba5f1",
-            "n": 8192,
-            "r": 8,
-            "p": 1
+            "p": 1,
+            "r": 8
         },
-        "mac": "016a1108858f33d17099ece4670de23d39e4e0d369788c11498d274757f3a30c"
+        "mac": "32522411292d6cb9434e5f11c06017d8b4faf66dc9aa2a7abf078fb2bd1c5007"
+    },
+    "x-ethers": {
+        "client": "ethers.js",
+        "gethFilename": "UTC--2018-09-20T13-35-26.0Z--4102c38cded18458b0ae122824e43500a4b11165",
+        "mnemonicCounter": "108b476070af65c1a746bc8a30f4c78b",
+        "mnemonicCiphertext": "3d73e71a1e05a2e3917498378060a33a",
+        "version": "0.1"
     }
 }

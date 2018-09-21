@@ -6,29 +6,27 @@ window.onload = async function () {
     let callbackFn = async function () {
         // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
         let transactions = [
-            //Approve Transaction
             {
                 to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
                 abi: tokenABI,
                 gasLimit: 4700000,
                 valueAmounts: {
                     eth: 0,
-                    token: 1000
-                },
-                fnName: "approve",
-                params: ["0xc8b06aA70161810e00bFd283eDc68B1df1082301", 1000]
-            },
-            // Generic Transaction
-            {
-                to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                abi: tokenABI,
-                gasLimit: 4700000,
-                valueAmounts: {
-                    eth: 0,
-                    token: 1000
+                    token: 10
                 },
                 fnName: "transfer",
-                params: ["0xa3796ec8e53402fd4ea9f67012060e86b4a86572", 1000]
+                params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+            },
+            {
+                to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+                abi: tokenABI,
+                gasLimit: 4700000,
+                valueAmounts: {
+                    eth: 0,
+                    token: 10
+                },
+                fnName: "transfer",
+                params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
             }
         ];
 
