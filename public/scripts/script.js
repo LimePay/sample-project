@@ -36,14 +36,7 @@ window.onload = async function () {
         return await txBuilder.buildSignedTransactions(transactions);
     }
 
-    let isInitializedCorrect = await LimePayWeb.init(result.token, callbackFn);
-
-    if (isInitializedCorrect) {
-        toastr.success('Successfully initialized Lime Pay!', 'Test');
-    } else {
-        toastr.error('Something went wrong! Cannot initialize Lime Pay!', 'Test');
-    }
-
+    await LimePayWeb.init(result.token, callbackFn);
 
     function getTokenABI() {
         return [
@@ -330,4 +323,21 @@ window.onload = async function () {
             }
         ]
     }
+
+    let checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('successfulSendForProcessing', onSuccessfulSendForProcessing);
+        checkoutForm.addEventListener('failureSendForProcessing', onFailureSendForProcessing);
+    } else {
+        throw new Error('checkout-form tag is missing, but it is required');
+    }
 }
+
+let onSuccessfulSendForProcessing = function () {
+    // What your application should do after successfully payment for processing send
+}
+
+let onFailureSendForProcessing = function () {
+    // What your application should do after failure payment for processing send
+}
+
