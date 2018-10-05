@@ -36,7 +36,25 @@ window.onload = async function () {
         return await txBuilder.buildSignedTransactions(transactions);
     }
 
-    await LimePayWeb.init(result.token, callbackFn);
+    let limePayConfig = {
+        signingTxCallback: callbackFn,
+        eventHandler: {
+            onSuccessfulSubmit: function () {
+                alert('Your payment was send for processing');
+                // Implement some logic
+            },
+            onFailedSubmit: function (err) {
+                alert('Your payment failed');
+                // Implement some logic
+            }
+        }
+    }
+
+    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        alert('Form initialization failed');
+        // Implement some logic
+    });
+
 
     function getTokenABI() {
         return [
@@ -323,21 +341,5 @@ window.onload = async function () {
             }
         ]
     }
-
-    let checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('successfulSendForProcessing', onSuccessfulSendForProcessing);
-        checkoutForm.addEventListener('failureSendForProcessing', onFailureSendForProcessing);
-    } else {
-        throw new Error('checkout-form tag is missing, but it is required');
-    }
-}
-
-let onSuccessfulSendForProcessing = function () {
-    // What your application should do after successfully payment for processing send
-}
-
-let onFailureSendForProcessing = function () {
-    // What your application should do after failure payment for processing send
 }
 
