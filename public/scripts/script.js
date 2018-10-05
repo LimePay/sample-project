@@ -36,13 +36,24 @@ window.onload = async function () {
         return await txBuilder.buildSignedTransactions(transactions);
     }
 
-    let isInitializedCorrect = await LimePayWeb.init(result.token, callbackFn);
-
-    if (isInitializedCorrect) {
-        toastr.success('Successfully initialized Lime Pay!', 'Test');
-    } else {
-        toastr.error('Something went wrong! Cannot initialize Lime Pay!', 'Test');
+    let limePayConfig = {
+        signingTxCallback: callbackFn,
+        eventHandler: {
+            onSuccessfulSubmit: function () {
+                alert('Your payment was send for processing');
+                // Implement some logic
+            },
+            onFailedSubmit: function (err) {
+                alert('Your payment failed');
+                // Implement some logic
+            }
+        }
     }
+
+    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        alert('Form initialization failed');
+        // Implement some logic
+    });
 
 
     function getTokenABI() {
@@ -331,3 +342,4 @@ window.onload = async function () {
         ]
     }
 }
+
