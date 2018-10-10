@@ -2,10 +2,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <head>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script type="text/javascript" src="./scripts/script.js"></script>
-    <script type="text/javascript" src="./libs/lime-pay.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/checkoutForm-style.css">
+    <link rel="stylesheet" type="text/css" href="./css/spinner-style.css">
 
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="./helpers/processAnimation.js"></script>
+
+    <!-- This is an example with limepay used as a npm module -->
+    <script type="text/javascript" src="./scripts/with-module-lib/with-module-lib.min.js"></script>
 </head>
 
 <body>
@@ -13,7 +18,7 @@
     <div class="lime-pay-wrapper">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <img src="./imgs/lime-logo.png" class="heading-line logo">
+                <img src="./images/lime-logo.png" class="heading-line logo">
                 <h3 class="heading-line company-name">LimePay</h3>
                 <div id="circularG" class="heading-line" style="display: none;">
                     <div id="circularG_1" class="circularG"></div>
@@ -27,7 +32,7 @@
                 </div>
             </div>
 
-            <form class="panel-body" id="checkout-form" onsubmit="LimePayWeb.PaymentService.processPayment()" action="#">
+            <form class="panel-body" id="checkout-form" action="#">
                 <div class="row">
 
                     <!--Hosted Payment Field for CC number-->

@@ -2,6 +2,7 @@ window.onload = async function () {
     let tokenABI = getTokenABI();
     var result = await $.get('/');
     const password = "123123123";
+    processAnimation.init();
 
     let callbackFn = async function () {
         // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
@@ -10,10 +11,7 @@ window.onload = async function () {
                 to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
                 abi: tokenABI,
                 gasLimit: 4700000,
-                valueAmounts: {
-                    eth: 0,
-                    token: 10
-                },
+                value: 0,
                 fnName: "transfer",
                 params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
             },
@@ -21,10 +19,7 @@ window.onload = async function () {
                 to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
                 abi: tokenABI,
                 gasLimit: 4700000,
-                valueAmounts: {
-                    eth: 0,
-                    token: 10
-                },
+                value: 0,
                 fnName: "transfer",
                 params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
             }
@@ -41,16 +36,20 @@ window.onload = async function () {
         eventHandler: {
             onSuccessfulSubmit: function () {
                 alert('Your payment was send for processing');
+                processAnimation.stopProcessingAnimation();
                 // Implement some logic
             },
             onFailedSubmit: function (err) {
+                console.log(err);
                 alert('Your payment failed');
+                processAnimation.stopProcessingAnimation();
                 // Implement some logic
             }
         }
     }
 
     LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        console.log(err);
         alert('Form initialization failed');
         // Implement some logic
     });
@@ -342,4 +341,6 @@ window.onload = async function () {
         ]
     }
 }
+
+
 
