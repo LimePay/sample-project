@@ -29,13 +29,11 @@ var initForm = (async () => {
                 }
             ];
 
-            //TODO Mock jsonWallet, password, contractAddress, contractABI
-
-            let txBuilder = new LimePayWeb.TransactionsBuilder(result.jsonWallet, password);
-            return await txBuilder.buildSignedTransactions(transactions);
+            return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
         }
 
         let limePayConfig = {
+            URL: "http://localhost:3000",
             signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {
