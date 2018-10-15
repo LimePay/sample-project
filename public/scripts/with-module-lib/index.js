@@ -33,7 +33,7 @@ var initForm = (async () => {
         }
 
         let limePayConfig = {
-            URL: "http://localhost:3000/",
+            URL: "http://localhost:3000",
             signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {

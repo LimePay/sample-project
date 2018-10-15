@@ -4,10 +4,10 @@ const axios = require('axios');
 const jsonWallet = require('./wallet');
 const app = express();
 
-const SHOPPER_ID = "5bb35916cafe6fcc4dd16ef3";
+const SHOPPER_ID = "5bc4735d3957e20cad01dd6e";
 
-const API_KEY = "dd0826c0c63711e8a28e3fa29e9358da";
-const API_SECRET = "e0eb86ffeb73c25f985ea2fe7a606476af124511fa0c8d906fefdc2f9331e44c6c89b2bc2c26b9b6d0cf5f460a8d3f54c649334b204518de57a54bd7a8519918c27dbfe064dd14c0dc677fb8f0391cbba1706629bad5116f6ee1f7ff10c27b2a7d1294da88f61775169e811be9c268695ece16cd45026eaf01c753f74cb5f121";
+const API_KEY = "78d7eb40d06911e8835a1fc6c684b570";
+const API_SECRET = "6f5a17f3535c243236cf0aa2736eda24c980de97dfaf3b79d29614ac1e38a6015ff80472d97ae050a5ce1a0852e2b8e053a4dfcd5be4d7ac4275e32a38f7be2e71b95754ed57d19b57c6846f9c66c18da25a72ad5d01797fd2f87372d9f3881492f01cc76ff7ad0e664f811df451a621b47af87977d4264a48edfc008c58f8c3";
 const URL = "http://localhost:3000/v1/payments"
 
 
