@@ -29,7 +29,7 @@ window.onload = async function () {
     }
 
     let limePayConfig = {
-        URL: "http://localhost:3000/",
+        URL: "http://localhost:3000",
         signingTxCallback: callbackFn,
         eventHandler: {
             onSuccessfulSubmit: function () {
