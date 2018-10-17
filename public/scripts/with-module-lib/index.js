@@ -1,8 +1,17 @@
 const LimePayWeb = require('limepay-web');
+const countries = require('./../../constants/countries-codes');
 
 var initForm = (async () => {
 
     window.onload = async function () {
+
+        (function populateDropdownWithCountryCodes() {
+            Object.keys(countries).forEach((countryCode) => {
+                let dropdownCountryCode = `<option value="${countryCode}">${countryCode} (${countries[countryCode]})</option>`;
+                $(dropdownCountryCode).appendTo("#countries-codes");
+            });
+        })();
+
         let tokenABI = getTokenABI();
         var result = await $.get('/');
         const password = "123123123";
@@ -36,6 +45,7 @@ var initForm = (async () => {
         }
 
         let limePayConfig = {
+            URL: "http://localhost:3000",
             signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {
@@ -346,11 +356,32 @@ var initForm = (async () => {
         }
 
         document.getElementById('checkout-form').addEventListener('submit', () => {
-            LimePayWeb.PaymentService.processPayment()
+            const cardHolderInformation = {
+                vatNumber: document.getElementById('vat-number').value,
+                name: document.getElementById('card-holder-name').value,
+                countryCode: document.getElementById('countries-codes').value,
+                zip: document.getElementById('zip-code').value,
+                street: document.getElementById('street-address').value
+            };
+
+            if (document.getElementById('company').checked) {
+                cardHolderInformation.isCompany = true;
+            } else if (document.getElementById('personal').checked) {
+                cardHolderInformation.isCompany = false;
+            } else {
+                throw new Error('Neither company, neither personal option is selected');
+            }
+
+            LimePayWeb.PaymentService.processPayment(cardHolderInformation);
         });
     }
+
 })();
 
+
+initForm.onInvalidCompanyField = function () {
+    processAnimation.stopProcessingAnimation();
+}
 
 
 module.exports = initForm;

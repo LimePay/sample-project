@@ -1,6 +1,18 @@
 window.onload = async function () {
+
+    (function populateDropdownWithCountryCodes() {
+        $.getJSON('./../static/constants/countries-codes.json', function (countriesCodes) {
+            $.each(countriesCodes, function (code) {
+                let dropdownCountryCode = `<option value="${code}">${code} (${countriesCodes[code]})</option>`;
+                $(dropdownCountryCode).appendTo("#countries-codes");
+            });
+        });
+    })();
+
+
     let tokenABI = getTokenABI();
     var result = await $.get('/');
+
     const password = "123123123";
     processAnimation.init();
 
@@ -32,6 +44,7 @@ window.onload = async function () {
     }
 
     let limePayConfig = {
+        URL: "http://localhost:3000",
         signingTxCallback: callbackFn,
         eventHandler: {
             onSuccessfulSubmit: function () {
@@ -53,7 +66,6 @@ window.onload = async function () {
         alert('Form initialization failed');
         // Implement some logic
     });
-
 
     function getTokenABI() {
         return [
@@ -340,6 +352,30 @@ window.onload = async function () {
             }
         ]
     }
+}
+
+function processPayment() {
+    const cardHolderInformation = {
+        vatNumber: document.getElementById('vat-number').value,
+        name: document.getElementById('card-holder-name').value,
+        countryCode: document.getElementById('countries-codes').value,
+        zip: document.getElementById('zip-code').value,
+        street: document.getElementById('street-address').value
+    };
+
+    if (document.getElementById('company').checked) {
+        cardHolderInformation.isCompany = true;
+    } else if (document.getElementById('personal').checked) {
+        cardHolderInformation.isCompany = false;
+    } else {
+        throw new Error('Neither company, neither personal option is selected');
+    }
+
+    LimePayWeb.PaymentService.processPayment(cardHolderInformation);
+}
+
+function onInvalidCompanyField() {
+    processAnimation.stopProcessingAnimation();
 }
 
 
