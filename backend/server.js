@@ -12,7 +12,7 @@ const app = express();
 // const API_KEY = "1888c350bcc711e898ec3dfe32153918";
 // const API_SECRET = "be26192f19a05d1101569b7454d7ea88eb78d1b48c54ee7d9bcbc18da010ee7416d60ff9769e27cc836bd6e5e6ac4f5693412133bf62782039abc1199cc46bb5a13a994efbbd3bd5b762bdae8aa9fe2c3a041c8b7fcfda94f4c0e540f78bd326c4489ad89be7cc646308871f5b9be52406cd370285238c6bf3da842a7c9e8858";
 // Created in the Remote Test MongoDB
-const SHOPPER_ID = "5bc44efa854cd8ac406761a8";
+const SHOPPER_ID = "5bc8a40c0fc36833261220c3";
 
 const API_KEY = "673dc9a0d04a11e88f350bc23d81661d";
 const API_SECRET = "3f21013f25b78841feb5242d7752aa3fb443ff6888a93e5fc529d89910af7d39e9ed94a9f24299e7755d6a7c790e0c342f5e6dd47c229ca88fb1783128aeea3f4d102f407994cf8ddfb826808e3520fc55cd8b1bdcb2291df39fc7623c878ffa734ac01b24039c8a6ffd2fa6bd95e35bb23dc6ed96c3ba4adca8860354dd8f7b";
@@ -39,7 +39,7 @@ app.get('/', async (req, res, next) => {
                     {
                         "description": "Credit",
                         "totalAmount": 100,
-                        "quantity": 42
+                        "quantity": 42.5
                     },
                 ],
                 "fundTxData": {
