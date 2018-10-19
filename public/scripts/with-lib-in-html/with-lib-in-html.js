@@ -10,13 +10,62 @@ window.onload = async function () {
     })();
 
 
-    let tokenABI = getTokenABI();
     var result = await $.get('/');
 
-    const password = "123123123";
     processAnimation.init();
 
-    let callbackFn = async function () {
+    let limePayConfig = {
+        URL: "http://localhost:3000",
+        eventHandler: {
+            onSuccessfulSubmit: function () {
+                alert('Your payment was send for processing');
+                processAnimation.stopProcessingAnimation();
+                // Implement some logic
+            },
+            onFailedSubmit: function (err) {
+                console.log(err);
+                alert('Your payment failed');
+                processAnimation.stopProcessingAnimation();
+                // Implement some logic
+            }
+        }
+    }
+
+    console.log(result.token);
+    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        console.log(err);
+        alert('Form initialization failed');
+        // Implement some logic
+    });
+
+}
+
+async function processPayment() {
+    const cardHolderInformation = {
+        vatNumber: document.getElementById('vat-number').value,
+        name: document.getElementById('card-holder-name').value,
+        countryCode: document.getElementById('countries-codes').value,
+        zip: document.getElementById('zip-code').value,
+        street: document.getElementById('street-address').value
+    };
+
+    if (document.getElementById('company').checked) {
+        cardHolderInformation.isCompany = true;
+    } else if (document.getElementById('personal').checked) {
+        cardHolderInformation.isCompany = false;
+    } else {
+        throw new Error('Neither company, neither personal option is selected');
+    }
+
+    let signedTransactions = await signTransactions();
+    LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
+
+
+    let signTransactions = async function () {
+        const password = "123123123";
+        let tokenABI = getTokenABI();
+
+
         // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
         let transactions = [
             {
@@ -39,30 +88,6 @@ window.onload = async function () {
 
         return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
     }
-
-    let limePayConfig = {
-        URL: "http://localhost:3000",
-        signingTxCallback: callbackFn,
-        eventHandler: {
-            onSuccessfulSubmit: function () {
-                alert('Your payment was send for processing');
-                processAnimation.stopProcessingAnimation();
-                // Implement some logic
-            },
-            onFailedSubmit: function (err) {
-                console.log(err);
-                alert('Your payment failed');
-                processAnimation.stopProcessingAnimation();
-                // Implement some logic
-            }
-        }
-    }
-
-    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
-        console.log(err);
-        alert('Form initialization failed');
-        // Implement some logic
-    });
 
     function getTokenABI() {
         return [
@@ -349,26 +374,6 @@ window.onload = async function () {
             }
         ]
     }
-}
-
-function processPayment() {
-    const cardHolderInformation = {
-        vatNumber: document.getElementById('vat-number').value,
-        name: document.getElementById('card-holder-name').value,
-        countryCode: document.getElementById('countries-codes').value,
-        zip: document.getElementById('zip-code').value,
-        street: document.getElementById('street-address').value
-    };
-
-    if (document.getElementById('company').checked) {
-        cardHolderInformation.isCompany = true;
-    } else if (document.getElementById('personal').checked) {
-        cardHolderInformation.isCompany = false;
-    } else {
-        throw new Error('Neither company, neither personal option is selected');
-    }
-
-    LimePayWeb.PaymentService.processPayment(cardHolderInformation);
 }
 
 function onInvalidCompanyField() {
