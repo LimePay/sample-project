@@ -31,7 +31,6 @@ window.onload = async function () {
         }
     }
 
-    console.log(result.token);
     LimePayWeb.init(result.token, limePayConfig).catch((err) => {
         console.log(err);
         alert('Form initialization failed');
@@ -57,11 +56,12 @@ async function processPayment() {
         throw new Error('Neither company, neither personal option is selected');
     }
 
-    let signedTransactions = await signTransactions();
+    let wallet = await $.get('/wallet');
+
+    let signedTransactions = await signTransactions(wallet.jsonWallet);
     LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
 
-
-    let signTransactions = async function () {
+    async function signTransactions(wallet) {
         const password = "123123123";
         let tokenABI = getTokenABI();
 
@@ -86,7 +86,7 @@ async function processPayment() {
             }
         ];
 
-        return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
+        return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, password, transactions);
     }
 
     function getTokenABI() {
@@ -379,6 +379,3 @@ async function processPayment() {
 function onInvalidCompanyField() {
     processAnimation.stopProcessingAnimation();
 }
-
-
-

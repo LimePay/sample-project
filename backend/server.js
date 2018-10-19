@@ -30,7 +30,7 @@ app.get('/', async (req, res, next) => {
                 "items": [
                     {
                         "description": "Credit",
-                        "totalAmount": 100,
+                        "lineAmount": 100,
                         "quantity": 42.5
                     },
                 ],
@@ -60,6 +60,10 @@ app.get('/', async (req, res, next) => {
         res.json(err.response.data);
 
     }
+});
+
+app.get('/wallet', async (req, res, next) => {
+    res.json({ jsonWallet: jsonWallet });
 });
 
 app.use((err, request, response, next) => {
