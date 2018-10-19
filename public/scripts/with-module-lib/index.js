@@ -40,6 +40,7 @@ var initForm = (async () => {
         });
 
         document.getElementById('checkout-form').addEventListener('submit', async () => {
+
             const cardHolderInformation = {
                 vatNumber: document.getElementById('vat-number').value,
                 name: document.getElementById('card-holder-name').value,
@@ -56,13 +57,14 @@ var initForm = (async () => {
                 throw new Error('Neither company, neither personal option is selected');
             }
 
+            let wallet = await $.get('/wallet');
             let tokenABI = getTokenABI();
             const password = "123123123";
 
-            let signedTransactions = await signTransactions();
+            let signedTransactions = await signTransactions(wallet);
             LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
 
-            let signTransactions = async function () {
+            let signTransactions = async function (wallet) {
                 // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
                 let transactions = [
                     {
@@ -83,7 +85,7 @@ var initForm = (async () => {
                     }
                 ];
 
-                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
+                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, password, transactions);
             }
 
             function getTokenABI() {
