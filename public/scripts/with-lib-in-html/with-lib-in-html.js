@@ -37,8 +37,6 @@ window.onload = async function () {
             }
         ];
 
-        //TODO Mock jsonWallet, password, contractAddress, contractABI
-
         return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
     }
 
