@@ -40,13 +40,15 @@ app.get('/', async (req, res, next) => {
                     "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
-                    "functionName": "approve"
+                    "functionName": "approve",
+                    "params": ["0x07F3fB05d8b7aF49450ee675A26A01592F922734", 1]
                 },
                 {
                     "to": "0x07F3fB05d8b7aF49450ee675A26A01592F922734",
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
-                    "functionName": "buySomeService"
+                    "functionName": "buySomeService",
+                    "params": ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
                 }
             ]
         }
@@ -65,8 +67,13 @@ app.get('/', async (req, res, next) => {
         let token = result.headers["x-lime-token"];
         res.json({ token: token, jsonWallet: jsonWallet });
     } catch (err) {
-        console.log(err.response.data);
+        res.json(err.response.data);
+
     }
+});
+
+app.get('/wallet', async (req, res, next) => {
+    res.json({ jsonWallet: jsonWallet });
 });
 
 app.use((err, request, response, next) => {
