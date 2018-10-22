@@ -6,7 +6,6 @@ const app = express();
 
 const HOST = require('./../config/config').HOST;
 
-
 // test server
 // const API_KEY = "d5888510d14611e8bbe2c9ba0f136f8e";
 // const API_SECRET = "0b9b786307efbfc5efebe1b38001bc62462c4addb087f5454db2402da0a58ad1b1acba3bde721a903ad0a43f36af6b1f1b877e6239cf2b689757add8034b89ded08e1e9e61035977688e4ba6be263c295d96d75f353a040f1eaab4a071d970a24cc77bd1e87d79bfaee4cb2ea87cb35ecee9015b6f5ad81c01a55922f80fc861";
@@ -75,6 +74,10 @@ app.get('/', async (req, res, next) => {
         // res.json(err.response ? err.response.data : err); // TypeError: Converting circular structure to JSON
         res.json(err);
     }
+});
+
+app.get('/wallet', async (req, res, next) => {
+    res.json({ jsonWallet: jsonWallet });
 });
 
 app.use((err, request, response, next) => {
