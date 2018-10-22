@@ -4,18 +4,25 @@ const axios = require('axios');
 const jsonWallet = require('./wallet');
 const app = express();
 
-const SHOPPER_ID = "5bc4735d3957e20cad01dd6e";
+const HOST = require('./../config/config').HOST;
 
-const API_KEY = "78d7eb40d06911e8835a1fc6c684b570";
-const API_SECRET = "6f5a17f3535c243236cf0aa2736eda24c980de97dfaf3b79d29614ac1e38a6015ff80472d97ae050a5ce1a0852e2b8e053a4dfcd5be4d7ac4275e32a38f7be2e71b95754ed57d19b57c6846f9c66c18da25a72ad5d01797fd2f87372d9f3881492f01cc76ff7ad0e664f811df451a621b47af87977d4264a48edfc008c58f8c3";
-const URL = "http://localhost:3000/v1/payments"
 
+// test server
+// const API_KEY = "d5888510d14611e8bbe2c9ba0f136f8e";
+// const API_SECRET = "0b9b786307efbfc5efebe1b38001bc62462c4addb087f5454db2402da0a58ad1b1acba3bde721a903ad0a43f36af6b1f1b877e6239cf2b689757add8034b89ded08e1e9e61035977688e4ba6be263c295d96d75f353a040f1eaab4a071d970a24cc77bd1e87d79bfaee4cb2ea87cb35ecee9015b6f5ad81c01a55922f80fc861";
+// const SHOPPER_ID = "5bc5e9baf02b0a0c0604f067";
+
+// local 
+const API_KEY = "2953b240d2d811e88c12d7de8c5db96a";
+const API_SECRET = "2ac908132bdd21e000febb675dc6d7e4109043b81a7c71e847a28a684c7c5947b4879c343b88674df37402b1ad90036808660e30ed03c5866608b0445698e7b3097d302c8f1413d71162ce9e24f8484afdb6035f4b374a2e654b74abd853adefaec85909014e6a1cce78c235937c9a49ecbe9bf9bbef5868d45371d400b26099";
+const SHOPPER_ID = "5bc8893817b9b4cbddf3920a";
+
+const URL = HOST + "/v1/payments"
 
 app.use('/static', express.static('public'));
 app.get('/', async (req, res, next) => {
     try {
         // Get LimePay Token and return it to the UI
-
         let result = await axios({
             method: "POST",
             url: URL,
@@ -29,13 +36,13 @@ app.get('/', async (req, res, next) => {
                 "shopper": SHOPPER_ID,
                 "items": [
                     {
-                        "description": "Негърч1е",
+                        "description": "Some good description",
                         "amount": 100.4,
                         "quantity": 1
                     },
                     {
-                        "description": "Death Nigga2",
-                        "amount": 23.2,
+                        "description": "Another description",
+                        "amount": 25.2,
                         "quantity": 2
                     }
                 ],
@@ -50,20 +57,23 @@ app.get('/', async (req, res, next) => {
                         "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
                         "functionName": "transfer"
                     },
-                    {
-                        "gasPrice": "18800000000",
-                        "gasLimit": "4700000",
-                        "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                        "functionName": "transfer"
-                    }
+                    // {
+                    //     "gasPrice": "18800000000",
+                    //     "gasLimit": "4700000",
+                    //     "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
+                    //     "functionName": "transfer"
+                    // }
                 ]
             }
         });
+        
         let token = result.headers["x-lime-token"];
         res.json({ token: token, jsonWallet: jsonWallet });
     } catch (err) {
-        res.json(err.response.data);
-
+        //console.log('==========================>>>>> ERROR'); // TypeError: Converting circular structure to JSON
+        //console.log(err.response ? err.response.data : err);
+        // res.json(err.response ? err.response.data : err); // TypeError: Converting circular structure to JSON
+        res.json(err);
     }
 });
 
@@ -73,5 +83,5 @@ app.use((err, request, response, next) => {
 });
 
 var server = app.listen(9090, () => {
-    console.log("Marketplace app listening at http://localhost:" + 9090);
+    console.log(`Sample app listening at http://localhost:` + 9090);
 });

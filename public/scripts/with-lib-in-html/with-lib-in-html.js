@@ -1,7 +1,7 @@
 window.onload = async function () {
     let tokenABI = getTokenABI();
     var result = await $.get('/');
-    const password = "123123123";
+    const password = "1234567890";
     processAnimation.init();
 
     let callbackFn = async function () {
@@ -15,14 +15,14 @@ window.onload = async function () {
                 fnName: "transfer",
                 params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
             },
-            {
-                to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                abi: tokenABI,
-                gasLimit: 4700000,
-                value: 0,
-                fnName: "transfer",
-                params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-            }
+            // {
+            //     to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+            //     abi: tokenABI,
+            //     gasLimit: 4700000,
+            //     value: 0,
+            //     fnName: "transfer",
+            //     params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+            // }
         ];
 
         return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
@@ -30,6 +30,7 @@ window.onload = async function () {
 
     let limePayConfig = {
         URL: "http://localhost:3000",
+        // URL: 'http://test-limepay-api.eu-west-1.elasticbeanstalk.com',
         signingTxCallback: callbackFn,
         eventHandler: {
             onSuccessfulSubmit: function () {
@@ -46,8 +47,13 @@ window.onload = async function () {
         }
     }
 
+    console.log('result');
+    console.log(result);
+    console.log('======');
+
     LimePayWeb.init(result.token, limePayConfig).catch((err) => {
         console.log(err);
+        console.log(err.message);
         alert('Form initialization failed');
         // Implement some logic
     });

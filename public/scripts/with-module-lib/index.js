@@ -1,11 +1,12 @@
 const LimePayWeb = require('limepay-web');
+const HOST = require('./../../../config/config').HOST;
 
 var initForm = (async () => {
 
     window.onload = async function () {
         let tokenABI = getTokenABI();
         var result = await $.get('/');
-        const password = "123123123";
+        const password = "1234567890";
         processAnimation.init();
 
         let callbackFn = async function () {
@@ -28,12 +29,12 @@ var initForm = (async () => {
                     params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
                 }
             ];
-
+            
             return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
         }
 
         let limePayConfig = {
-            URL: "http://localhost:3000",
+            URL: HOST,
             signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {
@@ -43,6 +44,7 @@ var initForm = (async () => {
                 },
                 onFailedSubmit: function (err) {
                     console.log(err);
+                    console.log(err.message);
                     alert('Your payment failed');
                     processAnimation.stopProcessingAnimation();
                     // Implement some logic
