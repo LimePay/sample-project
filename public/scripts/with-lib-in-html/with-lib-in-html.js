@@ -1,11 +1,67 @@
 window.onload = async function () {
 
+    (function populateDropdownWithCountryCodes() {
+        $.getJSON('./../static/constants/countries-codes.json', function (countriesCodes) {
+            $.each(countriesCodes, function (code) {
+                let dropdownCountryCode = `<option value="${code}">${code} (${countriesCodes[code]})</option>`;
+                $(dropdownCountryCode).appendTo("#countries-codes");
+            });
+        });
+    })();
+
+
     var result = await $.get('/');
 
     processAnimation.init();
 
-    let callbackFn = async function () {
+    let limePayConfig = {
+        URL: "http://localhost:3000",
+        eventHandler: {
+            onSuccessfulSubmit: function () {
+                alert('Your payment was send for processing');
+                processAnimation.stopProcessingAnimation();
+                // Implement some logic
+            },
+            onFailedSubmit: function (err) {
+                console.log(err);
+                alert('Your payment failed');
+                processAnimation.stopProcessingAnimation();
+                // Implement some logic
+            }
+        }
+    }
 
+    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        console.log(err);
+        alert('Form initialization failed');
+        // Implement some logic
+    });
+
+}
+
+async function processPayment() {
+    const cardHolderInformation = {
+        vatNumber: document.getElementById('vat-number').value,
+        name: document.getElementById('card-holder-name').value,
+        countryCode: document.getElementById('countries-codes').value,
+        zip: document.getElementById('zip-code').value,
+        street: document.getElementById('street-address').value
+    };
+
+    if (document.getElementById('company').checked) {
+        cardHolderInformation.isCompany = true;
+    } else if (document.getElementById('personal').checked) {
+        cardHolderInformation.isCompany = false;
+    } else {
+        throw new Error('Neither company, neither personal option is selected');
+    }
+
+    let wallet = await $.get('/wallet');
+
+    let signedTransactions = await signTransactions(wallet.jsonWallet);
+    LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
+
+    async function signTransactions(wallet) {
         let tokenABI = "YOUR TOKEN ABI HERE";
         let contractABI = "YOUR SERVICE CONTRACT ABI HERE";
         let passphrase = "123123123";
@@ -29,33 +85,11 @@ window.onload = async function () {
             }
         ];
 
-        let txBuilder = new LimePayWeb.TransactionsBuilder(result.jsonWallet, passphrase);
-        return await txBuilder.buildSignedTransactions(transactions);
+        return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, passphrase, transactions);
     }
 
-    let limePayConfig = {
-        signingTxCallback: callbackFn,
-        eventHandler: {
-            onSuccessfulSubmit: function () {
-                alert('Your payment was send for processing');
-                processAnimation.stopProcessingAnimation();
-                // Implement some logic
-            },
-            onFailedSubmit: function (err) {
-                console.log(err);
-                alert('Your payment failed');
-                processAnimation.stopProcessingAnimation();
-                // Implement some logic
-            }
-        }
-    }
-
-    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
-        console.log(err);
-        alert('Form initialization failed');
-        // Implement some logic
-    });
 }
 
-
-
+function onInvalidCompanyField() {
+    processAnimation.stopProcessingAnimation();
+}

@@ -6,7 +6,6 @@ const app = express();
 
 const LIME_PAY_BASE_URL;
 
-const VENDOR_ID = "YOUR_VENDOR_ID_HERE";
 const SHOPPER_ID = "SHOPPERS_ID_HERE";
 
 const API_KEY = "YOUR_API_KEY_HERE";
@@ -23,7 +22,6 @@ app.get('/', async (req, res, next) => {
         let paymentData = {
             "currency": "USD",
             "shopper": SHOPPER_ID,
-            "vendor": VENDOR_ID,
             "items": [
                 {
                     "description": "my crypto apple",
@@ -40,13 +38,15 @@ app.get('/', async (req, res, next) => {
                     "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
-                    "functionName": "approve"
+                    "functionName": "approve",
+                    "params": ["0x07F3fB05d8b7aF49450ee675A26A01592F922734", 1]
                 },
                 {
                     "to": "0x07F3fB05d8b7aF49450ee675A26A01592F922734",
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
-                    "functionName": "buySomeService"
+                    "functionName": "buySomeService",
+                    "params": ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
                 }
             ]
         }
@@ -63,10 +63,15 @@ app.get('/', async (req, res, next) => {
         });
 
         let token = result.headers["x-lime-token"];
-        res.json({ token: token, jsonWallet: jsonWallet });
+        res.json({ token: token });
     } catch (err) {
-        console.log(err.response.data);
+        res.json(err.response.data);
+
     }
+});
+
+app.get('/wallet', async (req, res, next) => {
+    res.json({ jsonWallet: jsonWallet });
 });
 
 app.use((err, request, response, next) => {

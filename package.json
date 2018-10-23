@@ -13,7 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "express": "^4.16.3",
-    "limepay-web": "file:../limepay-library",
+    "limepay-web": "^0.1.2",
     "webpack": "^4.20.2"
   },
   "devDependencies": {
