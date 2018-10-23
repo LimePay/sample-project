@@ -14,7 +14,7 @@ const HOST = require('./../config/config').HOST;
 // local 
 const API_KEY = "2953b240d2d811e88c12d7de8c5db96a";
 const API_SECRET = "2ac908132bdd21e000febb675dc6d7e4109043b81a7c71e847a28a684c7c5947b4879c343b88674df37402b1ad90036808660e30ed03c5866608b0445698e7b3097d302c8f1413d71162ce9e24f8484afdb6035f4b374a2e654b74abd853adefaec85909014e6a1cce78c235937c9a49ecbe9bf9bbef5868d45371d400b26099";
-const SHOPPER_ID = "5bc8893817b9b4cbddf3920a";
+const SHOPPER_ID = "5bcdae24cb17720b563480e2";
 
 const URL = HOST + "/v1/payments"
 
@@ -36,12 +36,12 @@ app.get('/', async (req, res, next) => {
                 "items": [
                     {
                         "description": "Some good description",
-                        "amount": 100.4,
+                        "lineAmount": 100.4,
                         "quantity": 1
                     },
                     {
                         "description": "Another description",
-                        "amount": 25.2,
+                        "lineAmount": 25.2,
                         "quantity": 2
                     }
                 ],
@@ -69,10 +69,10 @@ app.get('/', async (req, res, next) => {
         let token = result.headers["x-lime-token"];
         res.json({ token: token, jsonWallet: jsonWallet });
     } catch (err) {
-        //console.log('==========================>>>>> ERROR'); // TypeError: Converting circular structure to JSON
+        console.log('==========================>>>>> ERROR'); // TypeError: Converting circular structure to JSON
         //console.log(err.response ? err.response.data : err);
-        // res.json(err.response ? err.response.data : err); // TypeError: Converting circular structure to JSON
-        res.json(err);
+        res.json(err.response ? err.response.data : err); // TypeError: Converting circular structure to JSON
+        // res.json(err);
     }
 });
 

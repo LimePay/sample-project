@@ -14,40 +14,38 @@ var initForm = (async () => {
         })();
 
         processAnimation.init();
-        
-        let tokenABI = getTokenABI();
-        var result = await $.get('/');
-        const password = "1234567890";
 
-        let callbackFn = async function () {
-            // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
-            let transactions = [
-                {
-                    to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                    abi: tokenABI,
-                    gasLimit: 4700000,
-                    value: 0,
-                    fnName: "transfer",
-                    params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-                },
-                {
-                    to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                    abi: tokenABI,
-                    gasLimit: 4700000,
-                    value: 0,
-                    fnName: "transfer",
-                    params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-                }
-            ];
+        // let tokenABI = getTokenABI();
+        // var result = await $.get('/');
+        // const password = "1234567890";
+
+        // let callbackFn = async function () {
+        //     // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
+        //     let transactions = [
+        //         {
+        //             to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+        //             abi: tokenABI,
+        //             gasLimit: 4700000,
+        //             value: 0,
+        //             fnName: "transfer",
+        //             params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+        //         },
+        //         {
+        //             to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+        //             abi: tokenABI,
+        //             gasLimit: 4700000,
+        //             value: 0,
+        //             fnName: "transfer",
+        //             params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+        //         }
+        //     ];
             
-            return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
-        }
-
-        processAnimation.init();
+        //     return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
+        // }
 
         let limePayConfig = {
             URL: HOST,
-            signingTxCallback: callbackFn,
+            //signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {
                     alert('Your payment was send for processing');
@@ -90,7 +88,7 @@ var initForm = (async () => {
 
             let wallet = await $.get('/wallet');
             let tokenABI = getTokenABI();
-            const password = "123123123";
+            const password = "1234567890";
 
             let signedTransactions = await signTransactions(wallet);
             LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
