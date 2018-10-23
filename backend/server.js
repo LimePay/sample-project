@@ -6,7 +6,6 @@ const app = express();
 
 const LIME_PAY_BASE_URL;
 
-const VENDOR_ID = "YOUR_VENDOR_ID_HERE";
 const SHOPPER_ID = "SHOPPERS_ID_HERE";
 
 const API_KEY = "YOUR_API_KEY_HERE";
@@ -23,7 +22,6 @@ app.get('/', async (req, res, next) => {
         let paymentData = {
             "currency": "USD",
             "shopper": SHOPPER_ID,
-            "vendor": VENDOR_ID,
             "items": [
                 {
                     "description": "my crypto apple",
@@ -65,7 +63,7 @@ app.get('/', async (req, res, next) => {
         });
 
         let token = result.headers["x-lime-token"];
-        res.json({ token: token, jsonWallet: jsonWallet });
+        res.json({ token: token });
     } catch (err) {
         res.json(err.response.data);
 
