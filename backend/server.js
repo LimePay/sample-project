@@ -4,10 +4,10 @@ const axios = require('axios');
 const jsonWallet = require('./wallet');
 const app = express();
 
-const SHOPPER_ID = "5bc8a40c0fc36833261220c3";
+const SHOPPER_ID = "5bd71b73fa7b2860da1ac0ac";
 
-const API_KEY = "fbf67330d04a11e88263abea21ae4ccd";
-const API_SECRET = "57351931a871f62867219be6090a9d9e8751908d7769485b03f52fc7530e5df1de4902546886cf790bf969a2e78c4f9b136834e936465256845309215c1ee463e31ebf09057cf1df687abc517e82199faa793e87ed75dfc55115c25099fe430f4a848e65775e187f9106bc0a5469d5c91458855f42341bc082ae4285a28ae36f";
+const API_KEY = "13fb6d80db8811e8a21bb9d012985814";
+const API_SECRET = "309c4802c54be8257b48c1b337e284a7a46b29061691cbf4bcccbc1d29c0a7e65f20fd4c8f34c1d07f755c7555de1139be56b6a55bf0748fa6eccd48b4b9a72b5d3f7e8c62e6dcbddfc95c3dae1b9f9665d1bdac30cd402068e37918f6e93d1e40d07aba006d6c49170780f750462b06ff40348697e0bbfb9b842ab9eb4e6950";
 const URL = "http://localhost:3000/v1/payments"
 
 
@@ -55,7 +55,7 @@ app.get('/', async (req, res, next) => {
             }
         });
         let token = result.headers["x-lime-token"];
-        res.json({ token: token, jsonWallet: jsonWallet });
+        res.json({ token: token });
     } catch (err) {
         res.json(err.response.data);
 
