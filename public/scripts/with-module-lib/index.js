@@ -74,16 +74,16 @@ var initForm = (async () => {
                         abi: tokenABI,
                         gasLimit: 4700000,
                         value: 0,
-                        fnName: "approve",
-                        params: ["0x07F3fB05d8b7aF49450ee675A26A01592F922734", 1]
+                        functionName: "approve",
+                        functionParams: ["0x07F3fB05d8b7aF49450ee675A26A01592F922734", 1]
                     },
                     {
                         to: '0x07F3fB05d8b7aF49450ee675A26A01592F922734',
                         abi: contractABI,
                         gasLimit: 4700000,
                         value: 0,
-                        fnName: "buySomeService",
-                        params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
+                        functionName: "buySomeService",
+                        functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
                     }
                 ];
 

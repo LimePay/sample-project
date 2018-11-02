@@ -39,14 +39,28 @@ app.get('/', async (req, res, next) => {
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
                     "functionName": "approve",
-                    "params": ["0x07F3fB05d8b7aF49450ee675A26A01592F922734", 1]
+                    "functionParams": [
+                        {
+                            type: "address",
+                            value:"0x07F3fB05d8b7aF49450ee675A26A01592F922734"
+                        },
+                        {
+                            type: "uint256",
+                            value: 1
+                        }
+                    ]
                 },
                 {
                     "to": "0x07F3fB05d8b7aF49450ee675A26A01592F922734",
                     "gasPrice": "18800000000",
                     "gasLimit": "4700000",
                     "functionName": "buySomeService",
-                    "params": ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
+                    "functionParams": [
+                        {
+                            type: "address",
+                            value: "0x1835f2716ba8f3ede4180c88286b27f070efe985"
+                        }
+                    ]
                 }
             ]
         }
