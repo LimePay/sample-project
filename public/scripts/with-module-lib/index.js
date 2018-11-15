@@ -1,3 +1,4 @@
+// !!! LimePay library 0.1.7 !!!
 const LimePayWeb = require('limepay-web');
 const HOST = require('./../../../config/config').HOST;
 const countries = require('./../../constants/countries-codes');
@@ -13,39 +14,11 @@ var initForm = (async () => {
             });
         })();
 
+        var result = await $.get('/');
         processAnimation.init();
-
-        // let tokenABI = getTokenABI();
-        // var result = await $.get('/');
-        // const password = "1234567890";
-
-        // let callbackFn = async function () {
-        //     // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
-        //     let transactions = [
-        //         {
-        //             to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-        //             abi: tokenABI,
-        //             gasLimit: 4700000,
-        //             value: 0,
-        //             fnName: "transfer",
-        //             params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-        //         },
-        //         {
-        //             to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-        //             abi: tokenABI,
-        //             gasLimit: 4700000,
-        //             value: 0,
-        //             fnName: "transfer",
-        //             params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-        //         }
-        //     ];
-            
-        //     return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(result.jsonWallet, password, transactions);
-        // }
 
         let limePayConfig = {
             URL: HOST,
-            //signingTxCallback: callbackFn,
             eventHandler: {
                 onSuccessfulSubmit: function () {
                     alert('Your payment was send for processing');
@@ -70,51 +43,29 @@ var initForm = (async () => {
 
         document.getElementById('checkout-form').addEventListener('submit', async () => {
 
-            const cardHolderInformation = {
-                vatNumber: document.getElementById('vat-number').value,
-                name: document.getElementById('card-holder-name').value,
-                countryCode: document.getElementById('countries-codes').value,
-                zip: document.getElementById('zip-code').value,
-                street: document.getElementById('street-address').value
-            };
-
-            if (document.getElementById('company').checked) {
-                cardHolderInformation.isCompany = true;
-            } else if (document.getElementById('personal').checked) {
-                cardHolderInformation.isCompany = false;
-            } else {
-                throw new Error('Neither company, neither personal option is selected');
-            }
-
-            let wallet = await $.get('/wallet');
-            let tokenABI = getTokenABI();
-            const password = "1234567890";
-
-            let signedTransactions = await signTransactions(wallet);
-            LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
-
             let signTransactions = async function (wallet) {
-                // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
+                
                 let transactions = [
                     {
                         to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
                         abi: tokenABI,
                         gasLimit: 4700000,
                         value: 0,
-                        fnName: "transfer",
-                        params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+                        functionName: "transfer",
+                        functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
                     },
-                    {
-                        to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                        abi: tokenABI,
-                        gasLimit: 4700000,
-                        value: 0,
-                        fnName: "transfer",
-                        params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-                    }
+                    // {
+                    //     to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+                    //     abi: tokenABI,
+                    //     gasLimit: 4700000,
+                    //     value: 0,
+                    //     fnName: "transfer",
+                    //     params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+                    // }
                 ];
 
-                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, password, transactions);
+                const password = "1234567890";
+                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet.jsonWallet, password, transactions);
             }
 
             function getTokenABI() {
@@ -402,6 +353,28 @@ var initForm = (async () => {
                     }
                 ]
             }
+
+            const cardHolderInformation = {
+                vatNumber: document.getElementById('vat-number').value,
+                name: document.getElementById('card-holder-name').value,
+                countryCode: document.getElementById('countries-codes').value,
+                zip: document.getElementById('zip-code').value,
+                street: document.getElementById('street-address').value
+            };
+
+            if (document.getElementById('company').checked) {
+                cardHolderInformation.isCompany = true;
+            } else if (document.getElementById('personal').checked) {
+                cardHolderInformation.isCompany = false;
+            } else {
+                throw new Error('Neither company, neither personal option is selected');
+            }
+
+            let wallet = await $.get('/wallet');
+            let tokenABI = getTokenABI();
+
+            let signedTransactions = await signTransactions(wallet);
+            LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
         });
     }
 
