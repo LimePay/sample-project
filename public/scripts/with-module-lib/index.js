@@ -1,7 +1,9 @@
-// !!! LimePay library 0.1.7 !!!
 const LimePayWeb = require('limepay-web');
 const HOST = require('./../../../config/config').HOST;
 const countries = require('./../../constants/countries-codes');
+const ethers = require('ethers');
+
+let USE_ENCRYPTED_MNEMONIC_WALLET = true;
 
 var initForm = (async () => {
 
@@ -65,7 +67,45 @@ var initForm = (async () => {
                 ];
 
                 const password = "1234567890";
-                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet.jsonWallet, password, transactions);
+
+                let mnemonic = 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive';
+                let wallet1 = ethers.Wallet.fromMnemonic(mnemonic);
+                // let wallet1 = ethers.Wallet.createRandom(); // cant use this variant for successful payment because shopper's wallet address would be different from generated one.
+
+                let encryptedWalletFromMnemonic = await wallet1.encrypt(password);
+
+                let decryptedWallet = await ethers.Wallet.fromEncryptedJson(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet, password);
+                
+                // let walletConfiguration = {
+                //     decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
+                // }
+
+                // let walletConfiguration = {
+                //     encryptedWallet: {
+                //         jsonWallet: JSON.parse(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet),
+                //         password: password
+                //     }
+                // }
+
+                
+            
+                let walletConfiguration = {
+                    mnemonic: {
+                        mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
+                        nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
+                    }
+                }
+
+                // let walletConfiguration = {
+                //     privateKey: '0xeacb4d87df63eecc3f056259cb631f925593f2bc93a41d36add12a855991d031'
+                // }
+
+                
+
+                let result = await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
+                return result;
+
+                // return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet.jsonWallet, password, transactions);
             }
 
             function getTokenABI() {
@@ -373,7 +413,7 @@ var initForm = (async () => {
             let wallet = await $.get('/wallet');
             let tokenABI = getTokenABI();
 
-            let signedTransactions = await signTransactions(wallet);
+            let signedTransactions = await signTransactions(wallet.jsonWallet);
             LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
         });
     }

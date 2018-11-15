@@ -2,7 +2,7 @@ let processPayment;
 let onInvalidCompanyField;
 
 let USE_LOCAL_SERVER = true;
-let USE_ENCRYPTED_MNEMONIC_WALLET = false;
+let USE_ENCRYPTED_MNEMONIC_WALLET = true;
 
 window.onload = async function () {
     (function populateDropdownWithCountryCodes() {
@@ -141,31 +141,30 @@ window.onload = async function () {
             // let wallet1 = ethers.Wallet.createRandom(); // cant use this variant for successful payment because shopper's wallet address would be different from generated one.
 
             let encryptedWalletFromMnemonic = await wallet1.encrypt(password);
-            
+
             let decryptedWallet = await ethers.Wallet.fromEncryptedJson(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet, password);
             
-
-            let walletConfiguration = {
-                decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
-            }
+            // let walletConfiguration = {
+            //     decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
+            // }
             
             // let walletConfiguration = {
             //     encryptedWallet: {
-            //         jsonWallet: USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet,
+            //         jsonWallet: JSON.parse(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet),
             //         password: password
             //     }
             // }
             
             // let walletConfiguration = {
-            //     privateKey: 'private key here'
+            //     privateKey: '0xeacb4d87df63eecc3f056259cb631f925593f2bc93a41d36add12a855991d031'
             // }
             
-            // let walletConfiguration = {
-            //     mnemonic: {
-            //         mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
-            //         nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
-            //     }
-            // }
+            let walletConfiguration = {
+                mnemonic: {
+                    mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
+                    nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
+                }
+            }
 
             let result = await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
 
