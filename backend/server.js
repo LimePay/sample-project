@@ -69,7 +69,8 @@ app.get('/', async (req, res, next) => {
         
         let token = result.headers["x-lime-token"];
         
-        res.json({ token: token, jsonWallet: jsonWallet });
+        // res.json({ token: token, jsonWallet: jsonWallet });
+        res.json({ token: token });
     } catch (err) {
         console.log('ERROR');
         console.log(err.response ? err.response.data : err);

@@ -37,8 +37,27 @@ window.onload = async function () {
         }
     }
 
+    LimePayWeb.init(result.token, limePayConfig).then(async () => {
 
-    LimePayWeb.init(result.token, limePayConfig).catch((err) => {
+        /* 
+        Once LimePayWeb is initialized you can calculateVAT
+        You need to pass the following object:
+
+            {
+                countryCode: 'bg', // required
+                isCompany: false, // required
+                vatNumber: 123456789 // optional
+            }
+        
+            Example:
+                let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
+                    countryCode: 'bg',
+                    isCompany: false
+                });
+
+                console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
+        */
+    }).catch((err) => {
         console.log(err);
         console.log(err.message);
         alert('Form initialization failed');
