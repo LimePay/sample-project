@@ -13,11 +13,27 @@ const API_KEY = APP_CREDENTIALS.API_KEY;
 const API_SECRET = APP_CREDENTIALS.API_SECRET;
 const SHOPPER_ID = APP_CREDENTIALS.SHOPPER_ID;
 
-// const URL = HOST + "/v1/payments"
-const URL = HOST + "/v1/payments/relayed"
+async function getLimeToken (url, data) {
+    // Get LimePay Token and return it to the UI
+    let result = await axios({
+        method: "POST",
+        url: url,
+        headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Authorization": "Basic " + Buffer.from(API_KEY + ":" + API_SECRET).toString('base64')
+        },
+        data: data
+    });
+    
+    let token = result.headers["x-lime-token"];
+    return token;
+}
 
 app.use('/static', express.static('public'));
+
 app.get('/', async (req, res, next) => {
+    const URL = HOST + "/v1/payments"
     try {
 
         let fiatData = {
@@ -59,8 +75,22 @@ app.get('/', async (req, res, next) => {
             ]
         }
 
+        let token = await getLimeToken(URL, fiatData);
+        
+        res.json({ token: token });
+    } catch (err) {
+        console.log('ERROR');
+        console.log(err.response ? err.response.data : err);
+
+        res.json(err.response ? err.response.data : err);
+    }
+});
+
+app.get('/relayed', async (req, res, next) => {
+    const URL = HOST + "/v1/payments/relayed";
+    try {
+
         let relayedData = {
-            "currency": "USD",
             "shopper": SHOPPER_ID,
             "fundTxData": {
                 "tokenAmount": "10000000000000000000",
@@ -86,21 +116,8 @@ app.get('/', async (req, res, next) => {
             ]
         }
 
-        // Get LimePay Token and return it to the UI
-        let result = await axios({
-            method: "POST",
-            url: URL,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-cache",
-                "Authorization": "Basic " + Buffer.from(API_KEY + ":" + API_SECRET).toString('base64')
-            },
-            data: relayedData
-        });
+        let token = await getLimeToken(URL, relayedData);
         
-        let token = result.headers["x-lime-token"];
-        
-        // res.json({ token: token, jsonWallet: jsonWallet });
         res.json({ token: token });
     } catch (err) {
         console.log('ERROR');
