@@ -88,7 +88,14 @@ var initForm = (async () => {
                 ];
 
 
-                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, passphrase, transactions);
+                let walletConfiguration = {
+                    encryptedWallet : {
+                        jsonWallet: wallet,
+                        password: passphrase
+                    }
+                }
+                
+                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
             }
 
         });
