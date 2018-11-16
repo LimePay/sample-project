@@ -2,7 +2,7 @@ let processPayment;
 let onInvalidCompanyField;
 
 let USE_LOCAL_SERVER = true;
-let USE_ENCRYPTED_MNEMONIC_WALLET = true;
+let USE_ENCRYPTED_MNEMONIC_WALLET = false;
 
 window.onload = async function () {
     (function populateDropdownWithCountryCodes() {
@@ -37,7 +37,34 @@ window.onload = async function () {
         }
     }
 
-    LimePayWeb.init(result.token, limePayConfig).then(async () => {
+    // LimePayWeb.init(result.token, limePayConfig).then(async () => {
+
+    //     /* 
+    //     Once LimePayWeb is initialized you can calculateVAT
+    //     You need to pass the following object:
+
+    //         {
+    //             countryCode: 'bg', // required
+    //             isCompany: false, // required
+    //             vatNumber: 123456789 // optional
+    //         }
+        
+    //         Example:
+    //             let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
+    //                 countryCode: 'bg',
+    //                 isCompany: false
+    //             });
+
+    //             console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
+    //     */
+    // }).catch((err) => {
+    //     console.log(err);
+    //     console.log(err.message);
+    //     alert('Form initialization failed');
+    //     // Implement some logic
+    // });
+    
+    LimePayWeb.initRelayedPayment(result.token, limePayConfig).then(async () => {
 
         /* 
         Once LimePayWeb is initialized you can calculateVAT
@@ -60,7 +87,7 @@ window.onload = async function () {
     }).catch((err) => {
         console.log(err);
         console.log(err.message);
-        alert('Form initialization failed');
+        alert('Form initialization failed RELAYED payment');
         // Implement some logic
     });
 
@@ -83,7 +110,9 @@ window.onload = async function () {
     
         let wallet = await $.get('/wallet');
         let signedTransactions = await signTransactions(wallet.jsonWallet);
-        LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
+        // await LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
+
+        await LimePayWeb.PaymentService.processRelayedPayment(signedTransactions);
 
         async function signTransactions(wallet) {
 
@@ -100,8 +129,8 @@ window.onload = async function () {
                 gasLimit: 4700000,
                 value: 0,
                 functionName: "transfer",
-                functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985",  1]
-            },
+                functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985",  0]
+            }
             // {
             //     to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
             //     abi: tokenABI,
@@ -144,9 +173,9 @@ window.onload = async function () {
 
             let decryptedWallet = await ethers.Wallet.fromEncryptedJson(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet, password);
             
-            // let walletConfiguration = {
-            //     decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
-            // }
+            let walletConfiguration = {
+                decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
+            }
             
             // let walletConfiguration = {
             //     encryptedWallet: {
@@ -159,13 +188,13 @@ window.onload = async function () {
             //     privateKey: '0xeacb4d87df63eecc3f056259cb631f925593f2bc93a41d36add12a855991d031'
             // }
             
-            let walletConfiguration = {
-                mnemonic: {
-                    mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
-                    nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
-                }
-            }
-
+            // let walletConfiguration = {
+            //     mnemonic: {
+            //         mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
+            //         nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
+            //     }
+            // }
+            
             let result = await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
 
             return result;

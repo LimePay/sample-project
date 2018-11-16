@@ -1,5 +1,5 @@
 let USE_LOCAL_SERVER = true;
-let USE_SHOPPER_FROM_MNEMONIC = true;
+let USE_SHOPPER_FROM_MNEMONIC = false;
 
 // local 
 const LOCAL_URL = 'http://localhost:3000';
