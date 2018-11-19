@@ -1,5 +1,9 @@
 const LimePayWeb = require('limepay-web');
+const HOST = require('./../../../config/config').HOST;
 const countries = require('./../../constants/countries-codes');
+const ethers = require('ethers');
+
+let USE_ENCRYPTED_MNEMONIC_WALLET = true;
 
 var initForm = (async () => {
 
@@ -13,11 +17,10 @@ var initForm = (async () => {
         })();
 
         var result = await $.get('/');
-
         processAnimation.init();
 
         let limePayConfig = {
-            URL: "http://localhost:3000",
+            URL: HOST,
             eventHandler: {
                 onSuccessfulSubmit: function () {
                     alert('Your payment was send for processing');
@@ -26,6 +29,7 @@ var initForm = (async () => {
                 },
                 onFailedSubmit: function (err) {
                     console.log(err);
+                    console.log(err.message);
                     alert('Your payment failed');
                     processAnimation.stopProcessingAnimation();
                     // Implement some logic
@@ -41,51 +45,67 @@ var initForm = (async () => {
 
         document.getElementById('checkout-form').addEventListener('submit', async () => {
 
-            const cardHolderInformation = {
-                vatNumber: document.getElementById('vat-number').value,
-                name: document.getElementById('card-holder-name').value,
-                countryCode: document.getElementById('countries-codes').value,
-                zip: document.getElementById('zip-code').value,
-                street: document.getElementById('street-address').value
-            };
-
-            if (document.getElementById('company').checked) {
-                cardHolderInformation.isCompany = true;
-            } else if (document.getElementById('personal').checked) {
-                cardHolderInformation.isCompany = false;
-            } else {
-                throw new Error('Neither company, neither personal option is selected');
-            }
-
-            let wallet = await $.get('/wallet');
-            let tokenABI = getTokenABI();
-            const password = "123123123";
-
-            let signedTransactions = await signTransactions(wallet);
-            LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
-
             let signTransactions = async function (wallet) {
-                // transactions -> [{to: Z, contractABI: Y, gasLimit: X, valueAmounts, fnName, ...params}]
+                
                 let transactions = [
                     {
                         to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
                         abi: tokenABI,
                         gasLimit: 4700000,
                         value: 0,
-                        fnName: "transfer",
-                        params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+                        functionName: "transfer",
+                        functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
                     },
-                    {
-                        to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
-                        abi: tokenABI,
-                        gasLimit: 4700000,
-                        value: 0,
-                        fnName: "transfer",
-                        params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
-                    }
+                    // {
+                    //     to: '0xc8b06aA70161810e00bFd283eDc68B1df1082301',
+                    //     abi: tokenABI,
+                    //     gasLimit: 4700000,
+                    //     value: 0,
+                    //     fnName: "transfer",
+                    //     params: ["0x1835f2716ba8f3ede4180c88286b27f070efe985", 1]
+                    // }
                 ];
 
-                return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, password, transactions);
+                const password = "1234567890";
+
+                let mnemonic = 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive';
+                let wallet1 = ethers.Wallet.fromMnemonic(mnemonic);
+                // let wallet1 = ethers.Wallet.createRandom(); // cant use this variant for successful payment because shopper's wallet address would be different from generated one.
+
+                let encryptedWalletFromMnemonic = await wallet1.encrypt(password);
+
+                let decryptedWallet = await ethers.Wallet.fromEncryptedJson(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet, password);
+                
+                // let walletConfiguration = {
+                //     decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
+                // }
+
+                // let walletConfiguration = {
+                //     encryptedWallet: {
+                //         jsonWallet: JSON.parse(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet),
+                //         password: password
+                //     }
+                // }
+
+                
+            
+                let walletConfiguration = {
+                    mnemonic: {
+                        mnemonic: 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive',
+                        nonEnglishLocaleWorldList: null // default value is 'null' for english, if mnemonic is in italian, these field should be 'it' 
+                    }
+                }
+
+                // let walletConfiguration = {
+                //     privateKey: '0xeacb4d87df63eecc3f056259cb631f925593f2bc93a41d36add12a855991d031'
+                // }
+
+                
+
+                let result = await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
+                return result;
+
+                // return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet.jsonWallet, password, transactions);
             }
 
             function getTokenABI() {
@@ -373,6 +393,28 @@ var initForm = (async () => {
                     }
                 ]
             }
+
+            const cardHolderInformation = {
+                vatNumber: document.getElementById('vat-number').value,
+                name: document.getElementById('card-holder-name').value,
+                countryCode: document.getElementById('countries-codes').value,
+                zip: document.getElementById('zip-code').value,
+                street: document.getElementById('street-address').value
+            };
+
+            if (document.getElementById('company').checked) {
+                cardHolderInformation.isCompany = true;
+            } else if (document.getElementById('personal').checked) {
+                cardHolderInformation.isCompany = false;
+            } else {
+                throw new Error('Neither company, neither personal option is selected');
+            }
+
+            let wallet = await $.get('/wallet');
+            let tokenABI = getTokenABI();
+
+            let signedTransactions = await signTransactions(wallet.jsonWallet);
+            LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
         });
     }
 

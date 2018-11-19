@@ -1,0 +1,31 @@
+let USE_LOCAL_SERVER = true;
+let USE_SHOPPER_FROM_MNEMONIC = true;
+
+// local 
+const LOCAL_URL = 'http://localhost:3000';
+const LOCAL_API_KEY = "38e01d50ddde11e88142ada855e6859f";
+const LOCAL_API_SECRET = "3e7e27eca551451c6cb1570b96b2bbaceaec585522f212e2496d665373df4eb7b65c215f0a9b751e5b1723c93507c7f6a0671cd5facffc72e9c3b1e77ac5a1ea94c60c0e3be89bdb2de13ff6797450dd25d558ba8a783e6701b9cf7cb5b6244155bb370aef15b3bbdd43885eb4107de6e9b968dca1d335357aafff187ed220e7";
+const LOCAL_SHOPPER_ID = "5bdb0a12d475a10ed45ade0e";
+const LOCAL_SHOPPER_ID_WITH_MNEMONIC = '5bec323311467a3802f6aba6'; // for mnemonic wallet
+
+// testing server
+const TEST_SERVER_URL = 'http://test-limepay-api.eu-west-1.elasticbeanstalk.com';
+const TEST_SERVER_API_KEY = "7b307c70e1dc11e882c6331062051e4d";
+const TEST_SERVER_API_SECRET = "0fe30eab400f6345fa9a3f183fca813e0a257df9735bee3eb7a9977f46505dacdcb69cdccf6d00ed1a5d26cfba290b4e4b9c34ec72897794cf86dc5279a066723f0d5201b4c93edd633eff7b1739d0a5599b08234473fc2b0e33df7e42aabf733abc376e887ecc41e548c632d8dde34b3f669b4954b2fe56cad077b092b1f5e0";
+const TEST_SERVER_SHOPPER_ID = "5be1be879cb8aa22efadc855";
+const TEST_SERVER_SHOPPER_ID_WITH_MNEMONIC = '5be2edf754aa9035b9d97042'; // for mnemonic wallet
+
+module.exports = {
+    HOST: USE_LOCAL_SERVER ? LOCAL_URL : TEST_SERVER_URL,
+    APP_CREDENTIALS: {
+        API_KEY: USE_LOCAL_SERVER ? LOCAL_API_KEY : TEST_SERVER_API_KEY,
+        API_SECRET: USE_LOCAL_SERVER ? LOCAL_API_SECRET : TEST_SERVER_API_SECRET,
+        SHOPPER_ID: (function () {
+            if (USE_LOCAL_SERVER) {
+                return USE_SHOPPER_FROM_MNEMONIC ? LOCAL_SHOPPER_ID_WITH_MNEMONIC : LOCAL_SHOPPER_ID;
+            } 
+            
+            return USE_SHOPPER_FROM_MNEMONIC ? TEST_SERVER_SHOPPER_ID_WITH_MNEMONIC : TEST_SERVER_SHOPPER_ID;
+        })()
+    }
+}

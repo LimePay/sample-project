@@ -1,21 +1,24 @@
 'use strict';
 const express = require('express');
 const axios = require('axios');
-const jsonWallet = require('./wallet');
+const jsonWallet = require('./wallet'); // const password = "1234567890";
 const app = express();
 
-const SHOPPER_ID = "5bd71b73fa7b2860da1ac0ac";
+const CONFIG = require('./../config/config');
+const HOST = CONFIG.HOST;
+const APP_CREDENTIALS = CONFIG.APP_CREDENTIALS;
 
-const API_KEY = "13fb6d80db8811e8a21bb9d012985814";
-const API_SECRET = "309c4802c54be8257b48c1b337e284a7a46b29061691cbf4bcccbc1d29c0a7e65f20fd4c8f34c1d07f755c7555de1139be56b6a55bf0748fa6eccd48b4b9a72b5d3f7e8c62e6dcbddfc95c3dae1b9f9665d1bdac30cd402068e37918f6e93d1e40d07aba006d6c49170780f750462b06ff40348697e0bbfb9b842ab9eb4e6950";
-const URL = "http://localhost:3000/v1/payments"
+// organization = 5be1b8ba9cb8aa22efadc827
+const API_KEY = APP_CREDENTIALS.API_KEY;
+const API_SECRET = APP_CREDENTIALS.API_SECRET;
+const SHOPPER_ID = APP_CREDENTIALS.SHOPPER_ID;
 
+const URL = HOST + "/v1/payments"
 
 app.use('/static', express.static('public'));
 app.get('/', async (req, res, next) => {
     try {
         // Get LimePay Token and return it to the UI
-
         let result = await axios({
             method: "POST",
             url: URL,
@@ -29,10 +32,15 @@ app.get('/', async (req, res, next) => {
                 "shopper": SHOPPER_ID,
                 "items": [
                     {
-                        "description": "Credit",
-                        "lineAmount": 100,
-                        "quantity": 42.5
+                        "description": "Some good description",
+                        "lineAmount": 100.4,
+                        "quantity": 1
                     },
+                    {
+                        "description": "Another description",
+                        "lineAmount": 25.2,
+                        "quantity": 2
+                    }
                 ],
                 "fundTxData": {
                     "tokenAmount": "10000000000000000000",
@@ -43,27 +51,36 @@ app.get('/', async (req, res, next) => {
                         "gasPrice": "18800000000",
                         "gasLimit": "4700000",
                         "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                        "functionName": "transfer"
-                    },
-                    {
-                        "gasPrice": "18800000000",
-                        "gasLimit": "4700000",
-                        "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                        "functionName": "transfer"
+                        "functionName": "transfer",
+                        "functionParams": [
+                            {
+                                type: 'address',
+                                value: "0x1835f2716ba8f3ede4180c88286b27f070efe985",
+                            },
+                            {
+                                type: 'uint',
+                                value: 1,
+                            }
+                        ]
                     }
                 ]
             }
         });
+        
         let token = result.headers["x-lime-token"];
+        
+        // res.json({ token: token, jsonWallet: jsonWallet });
         res.json({ token: token });
     } catch (err) {
-        res.json(err.response.data);
+        console.log('ERROR');
+        console.log(err.response ? err.response.data : err);
 
+        res.json(err.response ? err.response.data : err);
     }
 });
 
 app.get('/wallet', async (req, res, next) => {
-    res.json({ jsonWallet: jsonWallet });
+    res.json({ jsonWallet: JSON.stringify(jsonWallet) });
 });
 
 app.use((err, request, response, next) => {
@@ -72,5 +89,5 @@ app.use((err, request, response, next) => {
 });
 
 var server = app.listen(9090, () => {
-    console.log("Marketplace app listening at http://localhost:" + 9090);
+    console.log(`Sample app listening at http://localhost:` + 9090);
 });
