@@ -11,7 +11,7 @@ const APP_CREDENTIALS = CONFIG.APP_CREDENTIALS;
 // organization = 5be1b8ba9cb8aa22efadc827
 const API_KEY = APP_CREDENTIALS.API_KEY;
 const API_SECRET = APP_CREDENTIALS.API_SECRET;
-const SHOPPER_ID = APP_CREDENTIALS.SHOPPER_ID;
+const SHOPPER_ID = CONFIG.SHOPPER_ID;
 
 async function getLimeToken (url, data) {
     // Get LimePay Token and return it to the UI
