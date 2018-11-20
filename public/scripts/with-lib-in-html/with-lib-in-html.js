@@ -2,9 +2,6 @@ let processPayment;
 let processRelayedPayment;
 let onInvalidCompanyField;
 
-let USE_LOCAL_SERVER = true;
-let USE_ENCRYPTED_MNEMONIC_WALLET = false;
-
 window.onload = async function () {
     (function populateDropdownWithCountryCodes() {
         $.getJSON('./../static/constants/countries-codes.json', function (countriesCodes) {
@@ -17,7 +14,7 @@ window.onload = async function () {
 
     processAnimation.init();
 
-    let url = USE_LOCAL_SERVER ? "http://localhost:3000" : 'http://test-limepay-api.eu-west-1.elasticbeanstalk.com';
+    let url = "http://localhost:3000";
 
     let limePayConfig = {
         URL: url,
@@ -179,23 +176,11 @@ window.onload = async function () {
         //     }
         // }
 
-        // current used mnemonic
-        // mnemonic: saddle must leg organ divide fiction cupboard nothing useless flower polar arrive
-        // private key: 0xeacb4d87df63eecc3f056259cb631f925593f2bc93a41d36add12a855991d031
-        // public key: 0x047c226e3791cb631ffd1b6aa20b8399759a1e18b8ad4b428ee979e14dec6816877deba886b57c411e4b4d368b4f9e40a4055186ffbddefe25cc8251891825cb79
-        // address: 0x5AA6201D8F95a44e50b647dc52aa9Bc824f656f0
+        // let mnemonic = 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive';
+        // let wallet1 = ethers.Wallet.fromMnemonic(mnemonic);
+        // let encryptedWalletFromMnemonic = await wallet1.encrypt(password);
 
-        // random mnemonic
-        //let mnemonic = ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
-        ///console.log(`Mnemonic: ${mnemonic}`);
-
-        let mnemonic = 'saddle must leg organ divide fiction cupboard nothing useless flower polar arrive';
-        let wallet1 = ethers.Wallet.fromMnemonic(mnemonic);
-        // let wallet1 = ethers.Wallet.createRandom(); // cant use this variant for successful payment because shopper's wallet address would be different from generated one.
-
-        let encryptedWalletFromMnemonic = await wallet1.encrypt(password);
-
-        let decryptedWallet = await ethers.Wallet.fromEncryptedJson(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet, password);
+        let decryptedWallet = await ethers.Wallet.fromEncryptedJson(wallet, password);
         
         let walletConfiguration = {
             decryptedWallet: decryptedWallet // Decrypted wallet for example created from ethers.Wallet.createRandom()
@@ -203,7 +188,7 @@ window.onload = async function () {
         
         // let walletConfiguration = {
         //     encryptedWallet: {
-        //         jsonWallet: JSON.parse(USE_ENCRYPTED_MNEMONIC_WALLET ? encryptedWalletFromMnemonic : wallet),
+        //         jsonWallet: JSON.parse(wallet),
         //         password: password
         //     }
         // }
