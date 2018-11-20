@@ -91,7 +91,6 @@ app.get('/relayed', async (req, res, next) => {
         let relayedData = {
             "shopper": SHOPPER_ID,
             "fundTxData": {
-                "tokenAmount": "10000000000000000000",
                 "weiAmount": "60000000000000000"
             },
             "genericTransactions": [{
