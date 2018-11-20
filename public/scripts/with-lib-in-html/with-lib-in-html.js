@@ -15,8 +15,6 @@ window.onload = async function () {
         });
     })();
 
-    var result = await $.get('/');
-
     processAnimation.init();
 
     let url = USE_LOCAL_SERVER ? "http://localhost:3000" : 'http://test-limepay-api.eu-west-1.elasticbeanstalk.com';
@@ -38,60 +36,72 @@ window.onload = async function () {
         }
     }
 
-    LimePayWeb.init(result.token, limePayConfig).then(async () => {
-
-        /* 
-        Once LimePayWeb is initialized you can calculateVAT
-        You need to pass the following object:
-
-            {
-                countryCode: 'bg', // required
-                isCompany: false, // required
-                vatNumber: 123456789 // optional
-            }
-        
-            Example:
-                let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
-                    countryCode: 'bg',
-                    isCompany: false
-                });
-
-                console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
-        */
-    }).catch((err) => {
-        console.log(err);
-        console.log(err.message);
-        alert('Form initialization failed');
-        // Implement some logic
+    $('input[type=radio][name=initialization]').change(async function() {
+        if (this.value == 'fiat') {
+            await initFiatPayment();
+        }
+        else if (this.value == 'relayed') {
+            await initRelayedPayment();
+        }
     });
+
+    async function initFiatPayment () {
+        var result = await $.get('/');
+        LimePayWeb.initFiatPayment(result.token, limePayConfig).then(async () => {
+            /* 
+            Once LimePayWeb is initialized you can calculateVAT
+            You need to pass the following object:
     
-    let resultFromRelayedToken = await $.get('/relayed');
-    LimePayWeb.initRelayedPayment(resultFromRelayedToken.token, limePayConfig).then(async () => {
+                {
+                    countryCode: 'bg', // required
+                    isCompany: false, // required
+                    vatNumber: 123456789 // optional
+                }
+            
+                Example:
+                    let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
+                        countryCode: 'bg',
+                        isCompany: false
+                    });
+    
+                    console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
+            */
+        }).catch((err) => {
+            console.log(err);
+            console.log(err.message);
+            alert('Form initialization failed');
+            // Implement some logic
+        });
+    }
 
-        /* 
-        Once LimePayWeb is initialized you can calculateVAT
-        You need to pass the following object:
+    async function initRelayedPayment () {
+        let resultFromRelayedToken = await $.get('/relayed');
+        LimePayWeb.initRelayedPayment(resultFromRelayedToken.token, limePayConfig).then(async () => {
+            /* 
+            Once LimePayWeb is initialized you can calculateVAT
+            You need to pass the following object:
 
-            {
-                countryCode: 'bg', // required
-                isCompany: false, // required
-                vatNumber: 123456789 // optional
-            }
-        
-            Example:
-                let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
-                    countryCode: 'bg',
-                    isCompany: false
-                });
+                {
+                    countryCode: 'bg', // required
+                    isCompany: false, // required
+                    vatNumber: 123456789 // optional
+                }
+            
+                Example:
+                    let paymentTotalAmount = await LimePayWeb.utils.calculateVAT({
+                        countryCode: 'bg',
+                        isCompany: false
+                    });
 
-                console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
-        */
-    }).catch((err) => {
-        console.log(err);
-        console.log(err.message);
-        alert('Form initialization failed RELAYED payment');
-        // Implement some logic
-    });
+                    console.log(`Your purchase amount: ${paymentTotalAmount.data.totalAmount}\nVat rate: ${paymentTotalAmount.data.rate}`);
+            */
+        }).catch((err) => {
+            console.log(err);
+            console.log(err.message);
+            alert('Form initialization failed RELAYED payment');
+            // Implement some logic
+        });
+    }
 
     processPayment = async function () {
         const cardHolderInformation = {
@@ -110,11 +120,8 @@ window.onload = async function () {
             throw new Error('Neither company, neither personal option is selected');
         }
     
-        let signedTransactions = await getSignedTransactions();
-
-        await LimePayWeb.PaymentService.processRelayedPayment(signedTransactions);
+        let signedTransactions = await getSignedTransactions(); 
         await LimePayWeb.PaymentService.processPayment(cardHolderInformation, signedTransactions);
-
     }
 
     processRelayedPayment = async function () {
