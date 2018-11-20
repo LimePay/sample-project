@@ -1,91 +1,132 @@
 'use strict';
 const express = require('express');
 const axios = require('axios');
-const jsonWallet = "Shopper's JSON Wallet";
+const jsonWallet = require('./wallet');
 const app = express();
 
-const LIME_PAY_BASE_URL;
+const CONFIG = require('./../config/config');
+const HOST = CONFIG.HOST;
+const APP_CREDENTIALS = CONFIG.APP_CREDENTIALS;
 
-const SHOPPER_ID = "SHOPPERS_ID_HERE";
+// organization = 5be1b8ba9cb8aa22efadc827
+const API_KEY = APP_CREDENTIALS.API_KEY;
+const API_SECRET = APP_CREDENTIALS.API_SECRET;
+const SHOPPER_ID = CONFIG.SHOPPER_ID;
 
-const API_KEY = "YOUR_API_KEY_HERE";
-const API_SECRET = "YOUR_SECRET_HERE";
-const CREATE_PAYMENT_URL = LIME_PAY_BASE_URL + "/v1/payments"
+async function getLimeToken(url, data) {
+    // Get LimePay Token and return it to the UI
+    let result = await axios({
+        method: "POST",
+        url: url,
+        headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Authorization": "Basic " + Buffer.from(API_KEY + ":" + API_SECRET).toString('base64')
+        },
+        data: data
+    });
 
+    let token = result.headers["x-lime-token"];
+    return token;
+}
 
 app.use('/static', express.static('public'));
 
 app.get('/', async (req, res, next) => {
+    const URL = HOST + "/v1/payments"
     try {
-        // Get LimePay Token and return it to the UI
 
-        let paymentData = {
+        let fiatData = {
             "currency": "USD",
             "shopper": SHOPPER_ID,
-            "items": [
-                {
-                    "description": "my crypto apple",
-                    "amount": 100,
+            "items": [{
+                    "description": "Some good description",
+                    "lineAmount": 100.4,
                     "quantity": 1
+                },
+                {
+                    "description": "Another description",
+                    "lineAmount": 25.2,
+                    "quantity": 2
                 }
             ],
             "fundTxData": {
                 "tokenAmount": "10000000000000000000",
                 "weiAmount": "60000000000000000"
             },
-            "genericTransactions": [
-                {
-                    "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                    "gasPrice": "18800000000",
-                    "gasLimit": "4700000",
-                    "functionName": "approve",
-                    "functionParams": [
-                        {
-                            type: "address",
-                            value:"0x07F3fB05d8b7aF49450ee675A26A01592F922734"
-                        },
-                        {
-                            type: "uint256",
-                            value: 1
-                        }
-                    ]
-                },
-                {
-                    "to": "0x07F3fB05d8b7aF49450ee675A26A01592F922734",
-                    "gasPrice": "18800000000",
-                    "gasLimit": "4700000",
-                    "functionName": "buySomeService",
-                    "functionParams": [
-                        {
-                            type: "address",
-                            value: "0x1835f2716ba8f3ede4180c88286b27f070efe985"
-                        }
-                    ]
-                }
-            ]
+            "genericTransactions": [{
+                "gasPrice": "18800000000",
+                "gasLimit": "4700000",
+                "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
+                "functionName": "transfer",
+                "functionParams": [{
+                        type: 'address',
+                        value: "0x1835f2716ba8f3ede4180c88286b27f070efe985",
+                    },
+                    {
+                        type: 'uint',
+                        value: 0,
+                    }
+                ]
+            }]
         }
 
-        let result = await axios({
-            method: "POST",
-            url: CREATE_PAYMENT_URL,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-cache",
-                "Authorization": "Basic " + Buffer.from(API_KEY + ":" + API_SECRET).toString('base64')
-            },
-            data: paymentData
+        let token = await getLimeToken(URL, fiatData);
+
+        res.json({
+            token: token
         });
-
-        let token = result.headers["x-lime-token"];
-        res.json({ token: token });
     } catch (err) {
-        res.json(err.response.data);
+        console.log('ERROR');
+        console.log(err.response ? err.response.data : err);
 
+        res.json(err.response ? err.response.data : err);
+    }
+});
+
+app.get('/relayed', async (req, res, next) => {
+    const URL = HOST + "/v1/payments/relayed";
+    try {
+
+        let relayedData = {
+            "shopper": SHOPPER_ID,
+            "fundTxData": {
+                "weiAmount": "60000000000000000"
+            },
+            "genericTransactions": [{
+                "gasPrice": "18800000000",
+                "gasLimit": "4700000",
+                "to": "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
+                "functionName": "transfer",
+                "functionParams": [{
+                        type: 'address',
+                        value: "0x1835f2716ba8f3ede4180c88286b27f070efe985",
+                    },
+                    {
+                        type: 'uint',
+                        value: 0,
+                    }
+                ]
+            }]
+        }
+
+        let token = await getLimeToken(URL, relayedData);
+
+        res.json({
+            token: token
+        });
+    } catch (err) {
+        console.log('ERROR');
+        console.log(err.response ? err.response.data : err);
+
+        res.json(err.response ? err.response.data : err);
     }
 });
 
 app.get('/wallet', async (req, res, next) => {
-    res.json({ jsonWallet: jsonWallet });
+    res.json({
+        jsonWallet: JSON.stringify(jsonWallet)
+    });
 });
 
 app.use((err, request, response, next) => {
@@ -94,5 +135,5 @@ app.use((err, request, response, next) => {
 });
 
 var server = app.listen(9090, () => {
-    console.log("Sample APP listening at http://localhost:" + 9090);
+    console.log(`Sample app listening at http://localhost:` + 9090);
 });

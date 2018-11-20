@@ -11,6 +11,7 @@
 
     <!-- This is an example with limepay used as a npm module -->
     <script type="text/javascript" src="./scripts/with-module-lib/with-module-lib.min.js"></script>
+    <script src="./helpers/temp.js"></script>
 </head>
 
 <body>
@@ -32,7 +33,19 @@
                 </div>
             </div>
 
-            <form class="panel-body" id="checkout-form" action="#">
+            <br>
+
+            <div class="row">
+                <div class="col-xs-11 col-xs-offset-1">
+                    <input type="radio" name="initialization" value="fiat"> Init Fiat payment<br>
+                    <input type="radio" name="initialization" value="relayed"> Init Relayed payment<br>
+                </div>
+            </div>
+
+            <div id="relayed-payment-wrapper"></div>
+            <br>
+
+            <form class="panel-body" id="checkout-form" action="#" style="display:none;">
                 <div class="row">
 
                     <fieldset>
@@ -114,6 +127,7 @@
                 <button class="btn btn-raised btn-info btn-lg col-md-4" type="submit" id="submit-button">Pay Now</button>
 
             </form>
+
         </div>
     </div>
 
