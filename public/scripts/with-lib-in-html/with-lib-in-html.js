@@ -84,8 +84,15 @@ async function processPayment() {
                 functionParams: ["0x1835f2716ba8f3ede4180c88286b27f070efe985"]
             }
         ];
+        
+        let walletConfiguration = {
+            encryptedWallet: {
+                jsonWallet : wallet,
+                password: passphrase
+            }
+        }
 
-        return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(wallet, passphrase, transactions);
+        return await LimePayWeb.TransactionsBuilder.buildSignedTransactions(walletConfiguration, transactions);
     }
 
 }
