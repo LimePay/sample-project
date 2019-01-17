@@ -10,8 +10,8 @@
     <script type="text/javascript" src="./helpers/processAnimation.js"></script>
 
     <!-- This is an example with limepay used as a library in html -->
-    <script type="text/javascript" src="./scripts/with-lib-in-html/lime-pay.min.js"></script>
-    <script type="text/javascript" src="./scripts/with-lib-in-html/with-lib-in-html.js"></script>
+    <script type="text/javascript" src="./scripts/lime-pay.min.js"></script>
+    <script type="text/javascript" src="./scripts/script.js"></script>
     <script src="./helpers/temp.js"></script>
     <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"
         charset="utf-8"
@@ -49,7 +49,7 @@
             <div id="relayed-payment-wrapper"></div>
             <br>
 
-            <form class="panel-body" id="checkout-form" onsubmit="processPayment()" action="#" style="display:none;">
+            <form class="panel-body" id="checkout-form" onsubmit="processFiatPayment()" action="#" style="display:none;">
                 <div class="row">
 
                     <fieldset>
