@@ -1,6 +1,8 @@
 'use strict';
 const express = require('express');
 const axios = require('axios');
+const ethers = require('ethers');
+
 const LimePaySDK = require('limepay');
 let LimePay;
 
@@ -24,7 +26,7 @@ app.use('/', express.static('public'));
 
 app.post('/fiatPayment', async (request, response, next) => {
     try {
-        const fiatPaymentData = getFiatData();
+        const fiatPaymentData = await getFiatData();
         fiatPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
         
         const createdPayment = await LimePay.fiatPayment.create(fiatPaymentData, signerWalletConfig);
@@ -37,7 +39,7 @@ app.post('/fiatPayment', async (request, response, next) => {
 
 app.post('/relayedPayment', async (request, response, next) => {
     try {
-        const relayedPaymentData = getRelayedData();
+        const relayedPaymentData = await getRelayedData();
         relayedPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
     
         const createdPayment = await LimePay.relayedPayment.create(relayedPaymentData, signerWalletConfig);
@@ -67,7 +69,9 @@ app.listen(9090, async () => {
     console.log(`Sample app listening at http://localhost:` + 9090)
 });
 
-const getFiatData = () => {
+const getFiatData = async () => {
+    const gasPrice = await getGastPrice();
+
     return {
         currency: "USD",
         items: [
@@ -88,47 +92,68 @@ const getFiatData = () => {
         },
         genericTransactions: [
             {
-                gasPrice: "18800000000",
-                gasLimit: "4700000",
-                to: "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                functionName: "transfer",
+                gasPrice,
+                gasLimit: 4700000,
+                to: "0x30D25785515bE27d0B46Ab41Ed57dBAbf8A9cFf6",
+                functionName: "approve",
                 functionParams: [
                     {
                         type: 'address',
-                        value: "0x1835f2716ba8f3ede4180c88286b27f070efe985",
+                        value: "0x37688cFc875DC6AA6D39fE8449A759e434a86482",
                     },
                     {
                         type: 'uint',
-                        value: 0,
+                        value: '10000000000000000000',
                     }
                 ]
+            },
+            {
+                gasPrice,
+                gasLimit: 4700000,
+                to: "0x37688cFc875DC6AA6D39fE8449A759e434a86482",
+                functionName: "buySomeService",
+                functionParams: []
             }
         ]
     };
 };
 
-const getRelayedData = () => {
+const getRelayedData = async () => {
+    const gasPrice = await getGastPrice();
     return {
         fundTxData: {
             weiAmount: "60000000000000000"
         },
         genericTransactions: [
             {
-                gasPrice: "18800000000",
-                gasLimit: "4700000",
-                to: "0xc8b06aA70161810e00bFd283eDc68B1df1082301",
-                functionName: "transfer",
+                gasPrice,
+                gasLimit: 4700000,
+                to: "0x30D25785515bE27d0B46Ab41Ed57dBAbf8A9cFf6",
+                functionName: "approve",
                 functionParams: [
                     {
                         type: 'address',
-                        value: "0x1835f2716ba8f3ede4180c88286b27f070efe985",
+                        value: "0x37688cFc875DC6AA6D39fE8449A759e434a86482",
                     },
                     {
                         type: 'uint',
-                        value: 0,
+                        value: '10000000000000000000',
                     }
                 ]
+            },
+            {
+                gasPrice,
+                gasLimit: 4700000,
+                to: "0x37688cFc875DC6AA6D39fE8449A759e434a86482",
+                functionName: "buySomeService",
+                functionParams: []
             }
         ]
     }
+}
+
+const getGastPrice = async () => {
+    var price = await axios.get(CONFIG.GAS_STATION_URL);
+    var parsedPrice = ethers.utils.parseUnits((price.data.fast / 10).toString(10), 'gwei');
+    return parsedPrice.toString();
 }

@@ -4,6 +4,7 @@ let fiatPayment;
 let relayedPayment;
 let limePayConfig;
 let tokenABI;
+let contractABI;
 
 const SHOPPER_WALLET_PASSPHRASE = "some cool passphrase";
 
@@ -20,6 +21,10 @@ window.onload = async function () {
             tokenABI = abi;
         });
         
+        $.getJSON('./../constants/ContractABI.json', function (abi) {
+            contractABI = abi;
+        });
+
         limePayConfig = {
             environment: 'http://localhost:3000',
             eventHandler: {
@@ -132,7 +137,7 @@ window.onload = async function () {
             },
             {
                 to: '0x37688cFc875DC6AA6D39fE8449A759e434a86482',
-                abi: tokenABI, // the ABI of your contract here
+                abi: contractABI, // the ABI of your contract here
                 gasLimit: 4700000,
                 value: 0, // Put the amount of ethers if required
                 functionName: "buySomeService",
