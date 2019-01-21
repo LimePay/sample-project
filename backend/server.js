@@ -61,7 +61,7 @@ app.use((err, request, response, next) => {
 
 app.listen(9090, async () => {
     LimePay = await LimePaySDK.connect({
-        environment: 'http://localhost:3000/v1', // LimePay.Environment.Sandbox.Default,
+        environment: LimePaySDK.Environment.Sandbox, // LimePaySDK.Environment.Production,
         apiKey: CONFIG.API_KEY,
         secret: CONFIG.API_SECRET
     });

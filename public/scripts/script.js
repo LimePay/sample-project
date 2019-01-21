@@ -26,7 +26,7 @@ window.onload = async function () {
         });
 
         limePayConfig = {
-            environment: 'http://localhost:3000',
+            environment: LimePayWeb.Environment.Sandbox, // or LimePayWeb.Environment.Productions
             eventHandler: {
                 onSuccessfulSubmit: function () {
                     alert('Your payment was send for processing');
