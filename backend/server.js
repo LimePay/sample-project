@@ -70,7 +70,7 @@ app.listen(9090, async () => {
 });
 
 const getFiatData = async () => {
-    const gasPrice = await getGastPrice();
+    const gasPrice = await getGasPrice();
 
     return {
         currency: "USD",
@@ -119,7 +119,7 @@ const getFiatData = async () => {
 };
 
 const getRelayedData = async () => {
-    const gasPrice = await getGastPrice();
+    const gasPrice = await getGasPrice();
     return {
         fundTxData: {
             weiAmount: "60000000000000000"
@@ -152,7 +152,7 @@ const getRelayedData = async () => {
     }
 }
 
-const getGastPrice = async () => {
+const getGasPrice = async () => {
     var price = await axios.get(CONFIG.GAS_STATION_URL);
     var parsedPrice = ethers.utils.parseUnits((price.data.fast / 10).toString(10), 'gwei');
     return parsedPrice.toString();
