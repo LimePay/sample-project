@@ -1,0 +1,15 @@
+[{
+    "constant": false,
+    "inputs": [
+    ],
+    "name": "buySomeService",
+    "outputs": [
+        {
+            "name": "",
+            "type": "bool"
+        }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+}]
