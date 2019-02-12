@@ -2,7 +2,6 @@ let processFiatPayment;
 let processRelayedPayment;
 let fiatPayment;
 let relayedPayment;
-let limePayConfig;
 let tokenABI;
 let contractABI;
 
@@ -20,32 +19,18 @@ window.onload = async function () {
         $.getJSON('./../constants/TokenABI.json', function (abi) {
             tokenABI = abi;
         });
-        
+
         $.getJSON('./../constants/ContractABI.json', function (abi) {
             contractABI = abi;
         });
 
-        limePayConfig = {
-            environment: LimePayWeb.Environment.Sandbox, // or LimePayWeb.Environment.Productions
-            eventHandler: {
-                onSuccessfulSubmit: function () {
-                    alert('Your payment was send for processing');
-                    processAnimation.stopProcessingAnimation();
-                    // Implement some logic
-                },
-                onFailedSubmit: function (err) {
-                    console.log(err);
-                    alert('Your payment failed');
-                    processAnimation.stopProcessingAnimation();
-                    // Implement some logic
-                }
-            }
-        }
     })();
+
+    let limePay = await LimePayWeb.connect('http://localhost:3000/v1');
 
     processAnimation.init();
 
-    $('input[type=radio][name=initialization]').change(async function() {
+    $('input[type=radio][name=initialization]').change(async function () {
         if (this.value == 'fiat') {
             await initialiseFiatPayment();
         } else if (this.value == 'relayed') {
@@ -56,34 +41,38 @@ window.onload = async function () {
     async function initialiseFiatPayment () {
         // Make backend call for the creation of the payment
         const result = await $.post('/fiatPayment');
-        
+
         // Unlocks the payment form
-        fiatPayment = await LimePayWeb.initFiatPayment(result.token, limePayConfig);
+        fiatPayment = await limePay.FiatPayments.load(result.token);
     }
 
     async function initialiseRelayedPayment() {
         // Make backend call for the creation of the payment
         const result = await $.post('/relayedPayment');
 
-        relayedPayment = await LimePayWeb.initRelayedPayment(result.token, limePayConfig);
+        relayedPayment = await limePay.RelayedPayments.load(result.token);
     }
 
     // The function is trigger once the user submits the payment form
     processFiatPayment = async function () {
-        
+
         // Get the shopper JSON Wallet from the backend
         const shopperWallet = await $.get('/shopperWallet');
-        
-        const walletConfiguration = {
-            encryptedWallet: {
-                jsonWallet: JSON.stringify(shopperWallet),
-                password: SHOPPER_WALLET_PASSPHRASE
-            }
+
+        const encryptedWallet = {
+            json: JSON.stringify(shopperWallet),
+            password: SHOPPER_WALLET_PASSPHRASE
         };
+
         const transactions = await getTransactions();
 
         // Signs the provided transactions using the Shoppers wallet
-        await fiatPayment.buildSignedTransactions(walletConfiguration, transactions);
+        let signedTransactions = await limePay.Transactions.signWithMetamask(
+            transactions
+        );
+
+        console.log("Signed" + signedTransactions);
+        // await fiatPayment.buildSignedTransactions(walletConfiguration, transactions);
 
         // Extracting the Card holder information from the form
         const cardHolderInformation = {
@@ -101,7 +90,7 @@ window.onload = async function () {
         }
 
         // Triggers the processing of the payment
-        await fiatPayment.processPayment(cardHolderInformation);
+        await fiatPayment.process(cardHolderInformation, signedTransactions);
     }
 
     processRelayedPayment = async function () {
@@ -110,19 +99,23 @@ window.onload = async function () {
         // Get the shopper JSON Wallet from the backend
         const shopperWallet = await $.get('/shopperWallet');
 
-        const walletConfiguration = {
-            encryptedWallet: {
-                jsonWallet: JSON.stringify(shopperWallet),
-                password: SHOPPER_WALLET_PASSPHRASE
-            }
+        const encryptedWallet = {
+            json: JSON.stringify(shopperWallet),
+            password: SHOPPER_WALLET_PASSPHRASE
         };
+
         const transactions = await getTransactions();
 
         // Signs the provided transactions using the Shoppers wallet
-        await relayedPayment.buildSignedTransactions(walletConfiguration, transactions);
+        let signedTransactions = await limePay.Transactions.signWithEncryptedWallet(
+            transactions,
+            encryptedWallet.json,
+            encryptedWallet.password
+        );
+        // await relayedPayment.buildSignedTransactions(walletConfiguration, transactions);
 
         // Triggers the processing of the payment
-        await relayedPayment.processRelayedPayment();
+        await relayedPayment.process(signedTransactions);
     }
 
     async function getTransactions() {
@@ -145,7 +138,7 @@ window.onload = async function () {
             }
         ];
     }
-    
+
     onInvalidCompanyField = function () {
         processAnimation.stopProcessingAnimation();
     }

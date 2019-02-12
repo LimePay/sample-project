@@ -27,8 +27,8 @@ app.use('/', express.static('public'));
 app.post('/fiatPayment', async (request, response, next) => {
     try {
         const fiatPaymentData = await getFiatData();
-        fiatPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
-        
+        fiatPaymentData.shopper = "5c629497ff26107052e4ea05";  // Hard-coded shopper ID
+
         const createdPayment = await LimePay.fiatPayment.create(fiatPaymentData, signerWalletConfig);
         response.json({ token: createdPayment.limeToken });
     } catch (error) {
@@ -41,7 +41,7 @@ app.post('/relayedPayment', async (request, response, next) => {
     try {
         const relayedPaymentData = await getRelayedData();
         relayedPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
-    
+
         const createdPayment = await LimePay.relayedPayment.create(relayedPaymentData, signerWalletConfig);
         response.json({ token: createdPayment.limeToken });
     } catch (error) {
@@ -61,7 +61,7 @@ app.use((err, request, response, next) => {
 
 app.listen(9090, async () => {
     LimePay = await LimePaySDK.connect({
-        environment: LimePaySDK.Environment.Sandbox, // LimePaySDK.Environment.Production,
+        environment: 'http://localhost:3000/v1', // LimePaySDK.Environment.Production,
         apiKey: CONFIG.API_KEY,
         secret: CONFIG.API_SECRET
     });
