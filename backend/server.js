@@ -40,7 +40,7 @@ app.post('/fiatPayment', async (request, response, next) => {
 app.post('/relayedPayment', async (request, response, next) => {
     try {
         const relayedPaymentData = await getRelayedData();
-        relayedPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
+        relayedPaymentData.shopper = "5c629497ff26107052e4ea05";  // Hard-coded shopper ID
 
         const createdPayment = await LimePay.relayedPayment.create(relayedPaymentData, signerWalletConfig);
         response.json({ token: createdPayment.limeToken });

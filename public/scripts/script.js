@@ -38,7 +38,7 @@ window.onload = async function () {
         }
     });
 
-    async function initialiseFiatPayment () {
+    async function initialiseFiatPayment() {
         // Make backend call for the creation of the payment
         const result = await $.post('/fiatPayment');
 
@@ -47,10 +47,14 @@ window.onload = async function () {
     }
 
     async function initialiseRelayedPayment() {
+        processAnimation.startProcessingAnimation();
+
         // Make backend call for the creation of the payment
         const result = await $.post('/relayedPayment');
+        relayedPayment = limePay.RelayedPayments.load(result.token);
 
-        relayedPayment = await limePay.RelayedPayments.load(result.token);
+        processAnimation.stopProcessingAnimation();
+        document.getElementById('div-relayed-payment').hidden = false;
     }
 
     // The function is trigger once the user submits the payment form
@@ -67,12 +71,12 @@ window.onload = async function () {
         const transactions = await getTransactions();
 
         // Signs the provided transactions using the Shoppers wallet
-        let signedTransactions = await limePay.Transactions.signWithMetamask(
-            transactions
+        let signedTransactions = await limePay.Transactions.signWithEncryptedWallet(
+            transactions,
+            encryptedWallet.json,
+            encryptedWallet.password
         );
 
-        console.log("Signed" + signedTransactions);
-        // await fiatPayment.buildSignedTransactions(walletConfiguration, transactions);
 
         // Extracting the Card holder information from the form
         const cardHolderInformation = {
@@ -112,7 +116,6 @@ window.onload = async function () {
             encryptedWallet.json,
             encryptedWallet.password
         );
-        // await relayedPayment.buildSignedTransactions(walletConfiguration, transactions);
 
         // Triggers the processing of the payment
         await relayedPayment.process(signedTransactions);
