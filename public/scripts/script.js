@@ -44,7 +44,6 @@ window.onload = async function () {
         const result = await $.post('/fiatPayment');
         
         // Unlocks the payment form
-        const fiatPayment2 = await limepay.FiatPayments.load(result.token);
         fiatPayment = await limepay.FiatPayments.load(result.token);
     }
 
