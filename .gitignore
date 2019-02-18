@@ -1,4 +1,4 @@
 node_modules
 .DS_Store
-config/config.js
 package-lock.json
+backend/config.json

@@ -27,7 +27,7 @@ app.use('/', express.static('public'));
 app.post('/fiatPayment', async (request, response, next) => {
     try {
         const fiatPaymentData = await getFiatData();
-        fiatPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
+        fiatPaymentData.shopper = CONFIG.SHOPPER_ID;  // Some Hard-coded shopper ID (this should not be hardcoded)
         
         const createdPayment = await LimePay.fiatPayment.create(fiatPaymentData, signerWalletConfig);
         response.json({ token: createdPayment.limeToken });
@@ -40,7 +40,7 @@ app.post('/fiatPayment', async (request, response, next) => {
 app.post('/relayedPayment', async (request, response, next) => {
     try {
         const relayedPaymentData = await getRelayedData();
-        relayedPaymentData.shopper = "5c3e090cfd77ee6054c03883";  // Hard-coded shopper ID
+        relayedPaymentData.shopper = CONFIG.SHOPPER_ID;  // Some Hard-coded shopper ID (this should not be hardcoded)
     
         const createdPayment = await LimePay.relayedPayment.create(relayedPaymentData, signerWalletConfig);
         response.json({ token: createdPayment.limeToken });

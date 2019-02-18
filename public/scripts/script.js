@@ -7,9 +7,10 @@ let tokenABI;
 let contractABI;
 
 const SHOPPER_WALLET_PASSPHRASE = "some cool passphrase";
+let limepay;
 
 window.onload = async function () {
-    (function onWindowLoad() {
+    (async function onWindowLoad() {
         $.getJSON('./../constants/countries-codes.json', function (countriesCodes) {
             $.each(countriesCodes, function (code) {
                 let dropdownCountryCode = `<option value="${code}">${code} (${countriesCodes[code]})</option>`;
@@ -25,22 +26,7 @@ window.onload = async function () {
             contractABI = abi;
         });
 
-        limePayConfig = {
-            environment: LimePayWeb.Environment.Sandbox, // or LimePayWeb.Environment.Productions
-            eventHandler: {
-                onSuccessfulSubmit: function () {
-                    alert('Your payment was send for processing');
-                    processAnimation.stopProcessingAnimation();
-                    // Implement some logic
-                },
-                onFailedSubmit: function (err) {
-                    console.log(err);
-                    alert('Your payment failed');
-                    processAnimation.stopProcessingAnimation();
-                    // Implement some logic
-                }
-            }
-        }
+        limepay = await LimePayWeb.connect(LimePayWeb.Environment.Sandbox);
     })();
 
     processAnimation.init();
@@ -58,14 +44,14 @@ window.onload = async function () {
         const result = await $.post('/fiatPayment');
         
         // Unlocks the payment form
-        fiatPayment = await LimePayWeb.initFiatPayment(result.token, limePayConfig);
+        fiatPayment = await limepay.FiatPayments.load(result.token);
     }
 
     async function initialiseRelayedPayment() {
         // Make backend call for the creation of the payment
         const result = await $.post('/relayedPayment');
 
-        relayedPayment = await LimePayWeb.initRelayedPayment(result.token, limePayConfig);
+        relayedPayment = await limepay.RelayedPayments.load(result.token);
     }
 
     // The function is trigger once the user submits the payment form
@@ -74,16 +60,10 @@ window.onload = async function () {
         // Get the shopper JSON Wallet from the backend
         const shopperWallet = await $.get('/shopperWallet');
         
-        const walletConfiguration = {
-            encryptedWallet: {
-                jsonWallet: JSON.stringify(shopperWallet),
-                password: SHOPPER_WALLET_PASSPHRASE
-            }
-        };
         const transactions = await getTransactions();
 
         // Signs the provided transactions using the Shoppers wallet
-        await fiatPayment.buildSignedTransactions(walletConfiguration, transactions);
+        const signedTXs = await limepay.Transactions.signWithEncryptedWallet(transactions, JSON.stringify(shopperWallet), SHOPPER_WALLET_PASSPHRASE);
 
         // Extracting the Card holder information from the form
         const cardHolderInformation = {
@@ -101,7 +81,10 @@ window.onload = async function () {
         }
 
         // Triggers the processing of the payment
-        await fiatPayment.processPayment(cardHolderInformation);
+        fiatPayment.process(cardHolderInformation, signedTXs)
+            .then(res => {
+                alert("done!");
+            });
     }
 
     processRelayedPayment = async function () {
@@ -119,10 +102,13 @@ window.onload = async function () {
         const transactions = await getTransactions();
 
         // Signs the provided transactions using the Shoppers wallet
-        await relayedPayment.buildSignedTransactions(walletConfiguration, transactions);
+        const signedTXs = await limepay.Transactions.signWithEncryptedWallet(transactions, JSON.stringify(shopperWallet), SHOPPER_WALLET_PASSPHRASE);
 
         // Triggers the processing of the payment
-        await relayedPayment.processRelayedPayment();
+        relayedPayment.process(signedTXs)
+            .then(res => {
+                alert("done!");
+            });
     }
 
     async function getTransactions() {
