@@ -3,5 +3,5 @@
     "API_SECRET": "YOUR_API_SECRET",
     "SIGNER_WALLET_PASSPHRASE" : "some random password",
     "GAS_STATION_URL" : "https://ethgasstation.info/json/ethgasAPI.json",
-    "SHOPPER_ID" : "5c3e0757c67b1a3deadb855a"
+    "SHOPPER_ID" : "shopper's id"
 }

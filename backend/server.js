@@ -60,11 +60,11 @@ app.use((err, request, response, next) => {
 });
 
 app.listen(9090, async () => {
-        LimePay = await LimePaySDK.connect({
-            environment: LimePaySDK.Environment.Sandbox, // LimePaySDK.Environment.Production,
-            apiKey: CONFIG.API_KEY,
-            secret: CONFIG.API_SECRET
-        });
+    LimePay = await LimePaySDK.connect({
+        environment: LimePaySDK.Environment.Sandbox, // LimePaySDK.Environment.Production,
+        apiKey: CONFIG.API_KEY,
+        secret: CONFIG.API_SECRET
+    });
 
     console.log(`Sample app listening at http://localhost:` + 9090)
 });
