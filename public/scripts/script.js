@@ -81,7 +81,7 @@ window.onload = async function () {
         }
 
         // Triggers the processing of the payment
-        await fiatPayment.process(cardHolderInformation, signedTXs)
+        fiatPayment.process(cardHolderInformation, signedTXs)
             .then(res => {
                 alert("done!");
             });
