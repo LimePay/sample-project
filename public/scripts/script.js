@@ -26,7 +26,7 @@ window.onload = async function () {
             contractABI = abi;
         });
 
-        limepay = await LimePayWeb.connect("http://localhost:3000/v1");
+        limepay = await LimePayWeb.connect(LimePayWeb.Environment.Sandbox);
     })();
 
     processAnimation.init();
@@ -44,6 +44,7 @@ window.onload = async function () {
         const result = await $.post('/fiatPayment');
         
         // Unlocks the payment form
+        const fiatPayment2 = await limepay.FiatPayments.load(result.token);
         fiatPayment = await limepay.FiatPayments.load(result.token);
     }
 
@@ -81,7 +82,10 @@ window.onload = async function () {
         }
 
         // Triggers the processing of the payment
-        await fiatPayment.process(cardHolderInformation, signedTXs);
+        await fiatPayment.process(cardHolderInformation, signedTXs)
+            .then(res => {
+                alert("done!");
+            });
     }
 
     processRelayedPayment = async function () {
@@ -102,7 +106,10 @@ window.onload = async function () {
         const signedTXs = await limepay.Transactions.signWithEncryptedWallet(transactions, JSON.stringify(shopperWallet), SHOPPER_WALLET_PASSPHRASE);
 
         // Triggers the processing of the payment
-        await relayedPayment.process(signedTXs);
+        relayedPayment.process(signedTXs)
+            .then(res => {
+                alert("done!");
+            });
     }
 
     async function getTransactions() {
